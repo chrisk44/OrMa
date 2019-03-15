@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">OrMa</string>
+
+    <string-array name="dummy_users">
+        <item>Serv 1</item>
+        <item>Serv 2</item>
+    </string-array>
+</resources>
