@@ -1,34 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:background="#eeeeee"
+    tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/to_login_btn"
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:background="@android:color/background_light"
+        android:elevation="4dp"
+        android:translationZ="2dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttons_layout"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animationCache="true"
+            android:background="@android:color/darker_gray"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/order_notif_tile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                layout="@layout/order_notif_tile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/buttons_layout"
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="changeView"
-        android:text="Login" />
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <Button
-        android:id="@+id/to_main_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="changeView"
-        android:text="Main" />
+        <Button
+            android:id="@+id/new_order_btn"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="New Order" />
 
-    <Button
-        android:id="@+id/to_overview_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="changeView"
-        android:text="Overview" />
-
-    <Button
-        android:id="@+id/to_order_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="changeView"
-        android:text="Order" />
-</LinearLayout>
+        <Button
+            android:id="@+id/button3"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Orders Waiting" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
