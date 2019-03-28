@@ -5,5 +5,5 @@
     android:height="24dp">
     <path
         android:pathData="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4 -1.4L9 16.2z"
-        android:fillColor="#000000" />
+        android:fillColor="@color/toolbar_white" />
 </vector>

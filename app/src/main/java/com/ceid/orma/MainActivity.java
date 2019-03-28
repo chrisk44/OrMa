@@ -11,6 +11,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity{
     static Random r = new Random();
     View mainFragmentView;
+    Menu toolbarMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -24,11 +25,16 @@ public class MainActivity extends AppCompatActivity{
         ft.replace(R.id.main_fragment_view, new OverviewFragment());
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.commitAllowingStateLoss();
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
+        toolbarMenu = menu;
         getMenuInflater().inflate(R.menu.toolbar, menu);
+
+        // Disable done button
+        menu.findItem(R.id.done_icon).setVisible(false);
 
         return true;
     }

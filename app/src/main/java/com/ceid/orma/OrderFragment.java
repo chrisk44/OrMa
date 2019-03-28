@@ -48,6 +48,21 @@ public class OrderFragment extends Fragment{
         return fragmentView;
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+
+        ((MainActivity)getActivity()).toolbarMenu.findItem(R.id.done_icon).setVisible(true);
+        ((MainActivity)getActivity()).toolbarMenu.findItem(R.id.settings_icon).setVisible(false);
+    }
+    @Override
+    public void onStop(){
+        super.onStop();
+
+        ((MainActivity)getActivity()).toolbarMenu.findItem(R.id.done_icon).setVisible(false);
+        ((MainActivity)getActivity()).toolbarMenu.findItem(R.id.settings_icon).setVisible(true);
+    }
+
     OrderFragment setTable(Table t){
         this.table = t;
         return this;

@@ -7,4 +7,18 @@
         android:icon="@drawable/baseline_notifications_24px"
         android:title="@string/notifications"
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/done_icon"
+        android:icon="@drawable/baseline_done_24px"
+        android:title="@string/done"
+        app:showAsAction="always"/>
+
+
+    <item
+        android:id="@+id/settings_icon"
+        android:icon="@drawable/baseline_settings_20px"
+        android:title="@string/settings"
+        app:showAsAction="ifRoom"/>
+
 </menu>
