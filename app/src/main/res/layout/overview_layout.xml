@@ -10,6 +10,7 @@
         android:padding="5dp">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/main_overview_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="#D8D8D8">

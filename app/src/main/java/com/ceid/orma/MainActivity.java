@@ -4,6 +4,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.util.Random;
@@ -37,5 +38,28 @@ public class MainActivity extends AppCompatActivity{
         menu.findItem(R.id.done_icon).setVisible(false);
 
         return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        //if handled return true
+        switch(item.getItemId()){
+            case R.id.settings_icon:
+                //Go to settings
+
+                return true;
+
+            case R.id.done_icon:
+                // currentOrderFragment.onDoneClick(this) will return whether the order was sent
+
+                return true;
+
+            case R.id.notifications_icon:
+                // Reveal notifications
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

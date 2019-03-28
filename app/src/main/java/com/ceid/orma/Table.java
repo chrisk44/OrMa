@@ -16,7 +16,7 @@ enum Status{ TABLE_IDLE, TABLE_RESERVED, TABLE_FREE, TABLE_CALLING, TABLE_TO_PAY
 class Table{
     private String id;
     private int count;
-    private Status status;
+    private Status status = Status.TABLE_IDLE;
 
     private View view;
     private TextView id_view, count_view;
@@ -64,6 +64,8 @@ class Table{
         setStatus(Status.TABLE_FREE);
     }
 
+    String getId(){ return this.id; }
+    int getCount(){ return this.count; }
     void setStatus(Status s){
         this.status = s;
 
@@ -77,11 +79,10 @@ class Table{
         table_green.setVisibility(View.GONE);
         table_blue.setVisibility(View.GONE);
 
+        if(table_icon_style!=STYLE_ICONS){
+            table_normal.setVisibility(View.GONE);
+        }
         switch(table_icon_style){
-            case STYLE_ICONS:
-                table_normal.setVisibility(View.GONE);
-                break;
-
             case STYLE_INSIDE:
                 table_gray.setImageResource(R.drawable.table_icon_gray_inside);
                 table_red.setImageResource(R.drawable.table_icon_red_inside);

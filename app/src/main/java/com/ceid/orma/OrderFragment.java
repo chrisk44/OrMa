@@ -63,6 +63,11 @@ public class OrderFragment extends Fragment{
         ((MainActivity)getActivity()).toolbarMenu.findItem(R.id.settings_icon).setVisible(true);
     }
 
+    int onDoneClicked(MainActivity mainActivity){
+
+        return 0;
+    }
+
     OrderFragment setTable(Table t){
         this.table = t;
         return this;

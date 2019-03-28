@@ -1,6 +1,7 @@
 package com.ceid.orma;
 
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,15 +23,17 @@ public class OverviewFragment extends Fragment{
     static final int table_icon_style = STYLE_INSIDE;
 
     View fragmentView;
+    ConstraintLayout mainLayout;
     ArrayList<Table> tables;
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState){
         setRetainInstance(true);
         fragmentView = inflater.inflate(R.layout.overview_layout, container, false);
+        mainLayout = fragmentView.findViewById(R.id.main_overview_layout);
         tables = new ArrayList<>();
 
-        // Normally would build the overview here
+        // Normally would build the overview on mainLayout here
 
         // For testing
         tables.add(new Table("A1", 3, fragmentView.findViewById(R.id.tb1), getRandomOrder()));
