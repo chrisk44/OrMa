@@ -13,37 +13,36 @@ class Order{
     static String getStringFromType(Type type){
         switch(type){
             case TYPE_VODKA:
-                return "Vodka";
+                return "Stolichnaya";
 
             case TYPE_GIN:
-                return "Gin";
+                return "Gordon's Gin";
 
             case TYPE_LIQUOR:
-                return "Liquor";
+                return "Jagermeister";
 
             case TYPE_RUM:
-                return "Rum";
+                return "Bacardi";
 
             case TYPE_WHISKEY:
-                return "Whiskey";
+                return "Jack Daniel's";
         }
 
         return null;
     }
 
-    ArrayList<OrderItem> items = new ArrayList<>();
+    ArrayList<Product> items = new ArrayList<>();
 
-    Order(){
-    }
+    Order(){}
 
-    void addItem(OrderItem item){
+    void addItem(Product item){
         items.add(item);
     }
 
     float getTotal(){
         float total = 0.0f;
 
-        for(OrderItem i : items){
+        for(Product i : items){
             total += i.getPrice();
         }
 
@@ -52,19 +51,3 @@ class Order{
 
 }
 
-class OrderItem{
-
-    int count;
-    float price_per_item;
-    Order.Type type;
-    String extra;
-
-    OrderItem(Order.Type type, String extra, int count, float price_per){
-        this.type = type;
-        this.extra = extra;
-        this.count = count;
-        this.price_per_item = price_per;
-    }
-
-    float getPrice(){ return count*price_per_item; }
-}

@@ -8,4 +8,8 @@
         <item name="colorAccent">#673AB7</item>
     </style>
 
+    <dimen name="table_width">120dp</dimen>
+    <dimen name="wall_width">3dp</dimen>
+    <dimen name="bar_wall_width">1dp</dimen>
+
 </resources>

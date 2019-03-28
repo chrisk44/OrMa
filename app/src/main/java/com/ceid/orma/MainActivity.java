@@ -3,7 +3,7 @@ package com.ceid.orma;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.View;
 
 import java.util.Random;
@@ -24,6 +24,12 @@ public class MainActivity extends AppCompatActivity{
         ft.replace(R.id.main_fragment_view, new OverviewFragment());
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.commitAllowingStateLoss();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.toolbar, menu);
+
+        return true;
     }
 }

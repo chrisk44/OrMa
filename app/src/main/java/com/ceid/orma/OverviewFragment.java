@@ -18,6 +18,9 @@ import static com.ceid.orma.Order.Type.TYPE_VODKA;
 import static com.ceid.orma.Order.Type.TYPE_WHISKEY;
 
 public class OverviewFragment extends Fragment{
+    static final int STYLE_INSIDE = 0, STYLE_OUTSIDE = 1, STYLE_BOTH = 2, STYLE_ICONS = 3;
+    static final int table_icon_style = STYLE_INSIDE;
+
     View fragmentView;
     ArrayList<Table> tables;
 
@@ -77,17 +80,17 @@ public class OverviewFragment extends Fragment{
                 "",
                 "No ice",
                 "1 ice",
-                "cola",
+                "Cola",
                 "Lemon"
         };
-        int count = 1 + Math.abs(r.nextInt()%10);
+        int count = 1 + Math.abs(r.nextInt()%7);
         for(int j=0; j<count; j++){
             ord.addItem(
-                    new OrderItem(
+                    new Product(
                             item_types[Math.abs(r.nextInt()%item_types.length)],
                             extras[Math.abs(r.nextInt()%extras.length)],
-                            1+Math.abs(r.nextInt()%4),
-                            10.0f*Math.abs(r.nextFloat())
+                            1+Math.abs(r.nextInt()%3),
+                            4+Math.abs(r.nextInt()%5)
                     )
             );
         }

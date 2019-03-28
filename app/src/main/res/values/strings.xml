@@ -7,4 +7,5 @@
     </string-array>
 
     <string name="dummy"> </string>
+    <string name="notifications">Notifications</string>
 </resources>
