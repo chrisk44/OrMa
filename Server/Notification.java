@@ -12,17 +12,17 @@ abstract class Notification{
 	synchronized private getId(){
 		return last_id++;
 	}
-	Response show(){
+	boolean show(){
 		//Send notification to device
-		Response response = device.dispatch(this);
+		boolean response = device.dispatch(this);
 		
 		if(needs_response){
-			if(response == RESP_ACCEPTED){
+			if(response){
 				accept();
-				return RESP_ACCEPTED;
+				return true;
 			}else{
 				reject();
-				return RESP_REJECTED;
+				return false;
 			}
 		}
 	}
