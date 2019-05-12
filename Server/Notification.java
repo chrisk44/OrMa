@@ -1,7 +1,6 @@
 abstract class Notification{
 	private static last_id = 0;
 	protected long id;
-	protected MobileDevice device;
 	protected Date timestamp;
 	protected boolean needs_response = true;
 	
@@ -9,7 +8,8 @@ abstract class Notification{
 		this.id = getId();
 		this.timestamp = new Date();
 	}
-	synchronized private getId(){
+	synchronized private static getNewId(){
+		// Returns a new id
 		return last_id++;
 	}
 	boolean show(){
@@ -29,6 +29,7 @@ abstract class Notification{
 	
 	void accept(){}
 	void reject(){}
+	Device getDevice();
 }
 
 class OrderProblemNotification extends Notification{
@@ -47,6 +48,8 @@ class OrderProblemNotification extends Notification{
 		this.text = text;
 		this.needs_response = false;
 	}
+	
+	Device getDevice(){ return this.receiver.getDevice(); }
 }
 
 class OrderReadyNotification extends Notification{
@@ -61,6 +64,8 @@ class OrderReadyNotification extends Notification{
 		this.sender = sender;
 		this.receiver = receiver;
 	}
+	
+	Device getDevice(){ return this.receiver.getDevice(); }
 }
 
 class TableCallNotification extends Notification{
@@ -74,6 +79,8 @@ class TableCallNotification extends Notification{
 		this.receiver = receiver;
 		this.device = receiver.getDevice();
 	}
+	
+	Device getDevice(){ return this.receiver.getDevice(); }
 }
 
 class TableFreeNotification extends Notification{
@@ -97,6 +104,8 @@ class TableFreeNotification extends Notification{
 	void reject(){
 		wg.notifyWhenAvailable();
 	}
+	
+	Device getDevice(){ return this.receiver.getDevice(); }
 }
 
 class PrepAreaNotification extends Notification{
@@ -110,6 +119,8 @@ class PrepAreaNotification extends Notification{
 		this.order = order;
 		this.device = prepArea.getEmployee().getDevice();
 	}
+	
+	Device getDevice(){ return this.PrepArea.employee.getDevice(); }
 }
 
 class TopologyChangeNotification extends Notification{
@@ -122,6 +133,8 @@ class TopologyChangeNotification extends Notification{
 		this.device = employee.getDevice();
 		this.needs_response = false;
 	}
+	
+	Device getDevice(){ return this.employee.getDevice(); }
 }
 
 class ProductPriceNotification extends Notification{
@@ -135,6 +148,8 @@ class ProductPriceNotification extends Notification{
 		this.receiver = receiver;
 		this.needs_response = false;
 	}
+	
+	Device getDevice(){ return this.receiver.getDevice(); }
 }
 
 
