@@ -3,7 +3,7 @@ public class WaitingGroup {
 	private String name;
 	private int number_of_people;
 	private int priority;
-	static List<WaitingGroup> waitingList;
+	static ArrayList<WaitingGroup> waitingList = new ArrayList<>();
 	
 	public WaitingGroup(String n, int number_of_people, int priority)
 	{
