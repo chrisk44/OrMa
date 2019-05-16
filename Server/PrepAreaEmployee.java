@@ -1,6 +1,6 @@
 public class PrepAreaEmployee extends Employee {
-    protected KitchenDevice device;
+    protected PrepAreaDevice device;
     
-    public PrepAreaEmployee(KitchenDevice dev) {
+    public PrepAreaEmployee(PrepAreaDevice dev) {
         this.device = dev;
-        }
+    }
