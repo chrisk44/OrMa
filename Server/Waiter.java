@@ -25,19 +25,6 @@ public class Waiter extends Employee {
 		return res;
 	}
 
-	public boolean isNew()
-	{
-		if (this.is_new == true)
-		{
-			return true;
-			
-		}
-		else
-		{
-			return false;
-		}
-	}
-
 	public boolean editData(Bundle new_info)
 	{
 		if (validateData(new_info))
