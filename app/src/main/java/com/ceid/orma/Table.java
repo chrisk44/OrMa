@@ -5,12 +5,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import static com.ceid.orma.OverviewFragment.STYLE_BOTH;
-import static com.ceid.orma.OverviewFragment.STYLE_ICONS;
-import static com.ceid.orma.OverviewFragment.STYLE_INSIDE;
-import static com.ceid.orma.OverviewFragment.STYLE_OUTSIDE;
-import static com.ceid.orma.OverviewFragment.table_icon_style;
-
 enum Status{ TABLE_IDLE, TABLE_RESERVED, TABLE_FREE, TABLE_CALLING, TABLE_TO_PAY, TABLE_ATTENTION }
 
 class Table{
@@ -74,61 +68,32 @@ class Table{
         call_icon.setVisibility(View.GONE);
         pay_icon.setVisibility(View.GONE);
         reserved_icon.setVisibility(View.GONE);
-        table_gray.setVisibility(View.GONE);
-        table_red.setVisibility(View.GONE);
-        table_green.setVisibility(View.GONE);
-        table_blue.setVisibility(View.GONE);
+        table_gray.setVisibility(View.INVISIBLE);
+        table_red.setVisibility(View.INVISIBLE);
+        table_green.setVisibility(View.INVISIBLE);
+        table_blue.setVisibility(View.INVISIBLE);
 
-        if(table_icon_style!=STYLE_ICONS){
-            table_normal.setVisibility(View.GONE);
-        }
-        switch(table_icon_style){
-            case STYLE_INSIDE:
-                table_gray.setImageResource(R.drawable.table_icon_gray_inside);
-                table_red.setImageResource(R.drawable.table_icon_red_inside);
-                table_green.setImageResource(R.drawable.table_icon_green_inside);
-                table_blue.setImageResource(R.drawable.table_icon_blue_inside);
-                break;
-
-            case STYLE_OUTSIDE:
-                table_gray.setImageResource(R.drawable.table_icon_gray_outside);
-                table_red.setImageResource(R.drawable.table_icon_red_outside);
-                table_green.setImageResource(R.drawable.table_icon_green_outside);
-                table_blue.setImageResource(R.drawable.table_icon_blue_outside);
-                break;
-
-            case STYLE_BOTH:
-                table_gray.setImageResource(R.drawable.table_icon_gray_both);
-                table_red.setImageResource(R.drawable.table_icon_red_both);
-                table_green.setImageResource(R.drawable.table_icon_green_both);
-                table_blue.setImageResource(R.drawable.table_icon_blue_both);
-                break;
-        }
+        table_gray.setImageResource(R.drawable.table_icon_gray_inside);
+        table_red.setImageResource(R.drawable.table_icon_red_inside);
+        table_green.setImageResource(R.drawable.table_icon_green_inside);
+        table_blue.setImageResource(R.drawable.table_icon_blue_inside);
 
         // Enable the right ones
         switch(status){
             case TABLE_TO_PAY:
-                if(table_icon_style==STYLE_ICONS) pay_icon.setVisibility(View.VISIBLE);
-                else table_green.setVisibility(View.VISIBLE);
+                table_green.setVisibility(View.VISIBLE);
                 break;
 
             case TABLE_ATTENTION:
-                if(table_icon_style==STYLE_ICONS){
-                    call_icon.setVisibility(View.VISIBLE);
-                    alert_icon.setVisibility(View.VISIBLE);
-                }else{
-                    table_red.setVisibility(View.VISIBLE);
-                }
+                table_red.setVisibility(View.VISIBLE);
                 break;
 
             case TABLE_RESERVED:
-                if(table_icon_style==STYLE_ICONS) reserved_icon.setVisibility(View.VISIBLE);
-                else table_gray.setVisibility(View.VISIBLE);
+                table_gray.setVisibility(View.VISIBLE);
                 break;
 
             case TABLE_CALLING:
-                if(table_icon_style==STYLE_ICONS) call_icon.setVisibility(View.VISIBLE);
-                else table_blue.setVisibility(View.VISIBLE);
+                table_blue.setVisibility(View.VISIBLE);
                 break;
         }
     }

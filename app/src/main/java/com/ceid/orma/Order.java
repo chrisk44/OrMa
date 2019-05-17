@@ -1,48 +1,30 @@
 package com.ceid.orma;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 class Order{
-    enum Type {
-        TYPE_VODKA,
-        TYPE_GIN,
-        TYPE_WHISKEY,
-        TYPE_LIQUOR,
-        TYPE_RUM
-    }
-    static String getStringFromType(Type type){
-        switch(type){
-            case TYPE_VODKA:
-                return "Stolichnaya";
-
-            case TYPE_GIN:
-                return "Gordon's Gin";
-
-            case TYPE_LIQUOR:
-                return "Jagermeister";
-
-            case TYPE_RUM:
-                return "Bacardi";
-
-            case TYPE_WHISKEY:
-                return "Jack Daniel's";
-        }
-
-        return null;
-    }
-
-    ArrayList<Product> items = new ArrayList<>();
+    private long id;
+    private double balance;
+    private Date create_time;
+    private Date delivery_time;
+    private Date pay_time;
+    private Table table;
+    ArrayList<Product> products = new ArrayList();
+    private ArrayList<Boolean> product_paid = new ArrayList();
+    //private ArrayList<Waiter> waiters = new ArrayList();
+    //private PrepArea assigned_prepArea;
 
     Order(){}
 
     void addItem(Product item){
-        items.add(item);
+        products.add(item);
     }
 
     float getTotal(){
         float total = 0.0f;
 
-        for(Product i : items){
+        for(Product i : products){
             total += i.getPrice();
         }
 

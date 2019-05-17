@@ -7,7 +7,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import static com.ceid.orma.Order.getStringFromType;
+import static com.ceid.orma.Product.getStringFromType;
 
 class OrderAdapter extends ArrayAdapter<Product>{
     private Order order;
@@ -30,7 +30,7 @@ class OrderAdapter extends ArrayAdapter<Product>{
         }
 
         // find the item to work with
-        final Product current = order.items.get(position);
+        final Product current = order.products.get(position);
 
         final TextView count_view = itemview.findViewById(R.id.item_count_tv);
         TextView type_view = itemview.findViewById(R.id.item_type_tv);
@@ -42,7 +42,7 @@ class OrderAdapter extends ArrayAdapter<Product>{
         type_view.setText(getStringFromType(current.type));
         extra_view.setText(current.extra);
         count_view.setText(String.format(mainActivity.getResources().getConfiguration().locale, "%d", current.count));
-        price_view.setText(String.format(mainActivity.getResources().getConfiguration().locale, "%.1f0", current.price_per_item));
+        price_view.setText(String.format(mainActivity.getResources().getConfiguration().locale, "%.1f0", current.price));
 
         decr_but.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -65,6 +65,6 @@ class OrderAdapter extends ArrayAdapter<Product>{
     }
     @Override
     public int getCount(){
-        return order.items.size();
+        return order.products.size();
     }
 }

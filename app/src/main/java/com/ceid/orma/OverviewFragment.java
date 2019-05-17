@@ -6,22 +6,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 
 import static com.ceid.orma.MainActivity.r;
-import static com.ceid.orma.Order.Type.TYPE_GIN;
-import static com.ceid.orma.Order.Type.TYPE_LIQUOR;
-import static com.ceid.orma.Order.Type.TYPE_RUM;
-import static com.ceid.orma.Order.Type.TYPE_VODKA;
-import static com.ceid.orma.Order.Type.TYPE_WHISKEY;
+
 
 public class OverviewFragment extends Fragment{
-    static final int STYLE_INSIDE = 0, STYLE_OUTSIDE = 1, STYLE_BOTH = 2, STYLE_ICONS = 3;
-    static final int table_icon_style = STYLE_INSIDE;
-
     View fragmentView;
     ConstraintLayout mainLayout;
     ArrayList<Table> tables;
@@ -72,12 +63,10 @@ public class OverviewFragment extends Fragment{
     Order getRandomOrder(){
         Order ord = new Order();
 
-        Order.Type item_types[] = {
-                TYPE_VODKA,
-                TYPE_GIN,
-                TYPE_WHISKEY,
-                TYPE_LIQUOR,
-                TYPE_RUM
+        Product.ProductType item_types[] = {
+                Product.ProductType.PRODUCT_FOOD,
+                Product.ProductType.PRODUCT_DRINK,
+                Product.ProductType.PRODUCT_OTHER
         };
         String extras[] = {
                 "",
@@ -90,10 +79,12 @@ public class OverviewFragment extends Fragment{
         for(int j=0; j<count; j++){
             ord.addItem(
                     new Product(
-                            item_types[Math.abs(r.nextInt()%item_types.length)],
+                            "id", "description",
                             extras[Math.abs(r.nextInt()%extras.length)],
-                            1+Math.abs(r.nextInt()%3),
-                            4+Math.abs(r.nextInt()%5)
+                            4+Math.abs(r.nextInt()%5),
+                            item_types[Math.abs(r.nextInt()%item_types.length)],
+                            false,
+                            0.0
                     )
             );
         }
