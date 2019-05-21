@@ -1,4 +1,9 @@
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 class Order{
+	static ArrayList<Order> allOrders = new ArrayList<>();          // TODO: Add to CD
 
 	private long id;
 	private double balance;
@@ -6,11 +11,10 @@ class Order{
 	private Date delivery_time;
 	private Date pay_time;
 	private Table table;
-	private ArrayList<Product> products = new ArrayList();
-	private ArrayList<Boolean> products_paid = new ArrayList();
-	private ArrayList<Waiter> waiters = new ArrayList();
+	ArrayList<Product> products = new ArrayList<>();				// TODO: Change private->public in CD
+	private ArrayList<Boolean> products_paid = new ArrayList<>();
+	private ArrayList<Waiter> waiters = new ArrayList<>();
 	private PrepArea assigned_prepArea;
-	public static ArrayList<Order> allorders = new ArrayList();
 
 	Order(long id, double balance, Date create, Date delivery, Date pay, Table table, PrepArea prepArea){
 		this.id = id;
@@ -20,30 +24,32 @@ class Order{
 		this.pay_time = pay;
 		this.table = table;
 		this.assigned_prepArea = prepArea;
+
+		allOrders.add(this);
 	}
 
-	void onEdit(List<Product> p, List<int> action){
+	void onEdit(List<Product> p, List<Integer> action){
 		
 		boolean flag = true;
 		if(isAssigned()){
 			PrepAreaNotification n = new PrepAreaNotification(this.assigned_prepArea, this);
-			if(n.show() == false){
+			if(!n.show()){
 				flag = false;
 			}
 		}
 		
-		if (flag == true){
+		if (flag){
 			for(int i=0; i<p.size(); i++){
-				if (action.get(i) == 1){   //add a product
+				if (action.get(i) == 1){            // Add a product
 					this.products.add(p.get(i));
-				}else{   //remove a product
+				}else{                              // Remove a product
 					this.products.remove(p.get(i));
 				}
 			}
 			send();
-			showSuccess("Successful update");
+			Main.showSuccess("Successful update");
 		}else{
-			showFailure("Update failed");
+			Main.showFailure("Update failed");
 		}
 	}
 
@@ -53,12 +59,7 @@ class Order{
 	}
 
 	boolean isAssigned(){
-		if (this.assigned_prepArea == null){
-			return false;
-		}
-		else{
-			return true;
-		}
+		return this.assigned_prepArea != null;
 	}
 
 	void assignOrder(PrepArea prepArea, Order o){
@@ -68,16 +69,17 @@ class Order{
 
 	void setReady(){
 		Waiter w;
+		OrderReadyNotification n;
 		do{
-			w = Waiter.findBestForTable(this.table);	// estw oti ka8e fora epistrefei allon Waiter
-			OrderReadyNotification n = new OrderReadyNotification(this, this.assigned_prepArea, w);
-		}until(w.notify(n) == true);
+			w = Waiter.findBestForTable(this.table);	// TODO: Estw oti ka8e fora epistrefei allon Waiter
+			n = new OrderReadyNotification(this, this.assigned_prepArea, w);
+		}while(w.notify(n));
 	}
 	
-	void setPaid(List<Product> products){
-		for(Product p : products){
-			products_paid.add(p);
-			this.balance -= p.price;
+	void setPaid(ArrayList<Product> products){
+		for(int i=0; i<products.size(); i++){
+			products_paid.set(i, true);
+			this.balance -= products.get(i).price;
 		}
 	}
 
@@ -86,15 +88,20 @@ class Order{
 	}
 
 	static List<Order> findBestCombination(List<Order> orders){
-		return List<Order>;
+		ArrayList<Order> result = new ArrayList<>();
+
+		return result;
 	}
 
 	boolean hasKnownDevice(){
-
+		// TODO ?
+		return false;
 	}
 
 	void addProduct(Product p){
 		products.add(p);
+		products_paid.add(false);
+		balance += p.price;
 	}
 		
 	double getBalance(){

@@ -1,5 +1,5 @@
 class Product{
-	static final enum ProductType{ PRODUCT_DRINK, PRODUCT_FOOD, PRODUCT_OTHER };
+	enum ProductType{ PRODUCT_DRINK, PRODUCT_FOOD, PRODUCT_OTHER }
 	double price;
 	String id;
 	String description;
@@ -26,7 +26,7 @@ class Product{
 	}
 	boolean validateData(Bundle new_info){
 		if(new_info.getDouble("price") != this.price){
-			if(this.isCurrentlyInOrder) return false;
+			if(this.isCurrentlyInOrder()) return false;
 		}
 		
 		//Other checks that return false on failure...
@@ -36,21 +36,33 @@ class Product{
 	
 	void onEdit(Bundle new_info){
 		if(validateData(new_info)){
-			showSuccess("Successful update");
-			new ProductPriceNotification(this).show();
+			Main.showSuccess("Successful update");
+			for(Waiter w : Waiter.allWaiters){
+				new ProductPriceNotification(this, w).show();
+			}
 			
 			// Update the data info
-			this.description = bundle.getString("description");
-			this.price = bundle.getDouble("price");
-			this.type = bundle.getInt("type");
-			this.stock = bundle.getInt("stock");
-			this.has_alcohol = bundle.getBoolean("has_alcohol");
-			this.time_to_prepare = bundle.getDouble("time_to_prepare");
+			this.description = new_info.getString("description");
+			this.price = new_info.getDouble("price");
+			this.stock = new_info.getInt("stock");
+			this.has_alcohol = new_info.getBoolean("has_alcohol");
+			this.time_to_prepare = new_info.getDouble("time_to_prepare");
+			switch(new_info.getInt("type")){
+				case 0:
+					this.type = ProductType.PRODUCT_DRINK;
+					break;
+				case 1:
+					this.type = ProductType.PRODUCT_FOOD;
+					break;
+				case 2:
+					this.type = ProductType.PRODUCT_OTHER;
+					break;
+			}
 			
 			// Somehow save to database
 			// ...
 		}else{
-			showFailure("Update failed");
+			Main.showFailure("Update failed");
 		}
 	}
 }

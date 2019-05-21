@@ -1,6 +1,9 @@
-public class PrepAreaEmployee extends Employee {
+public class PrepAreaEmployee extends Employee{
     protected PrepAreaDevice device;
-    
-    public PrepAreaEmployee(PrepAreaDevice dev) {
+
+    public PrepAreaEmployee(String username, String password, double hours, boolean is_new, PrepAreaDevice dev){
+        super(username, password, hours, is_new);
         this.device = dev;
     }
+
+}

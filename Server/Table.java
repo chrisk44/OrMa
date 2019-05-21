@@ -1,106 +1,81 @@
-public class Table {
+import java.util.ArrayList;
 
+public class Table {
+	static ArrayList<Table> allTables = new ArrayList<>();		// TODO: Add to CD
 	private String id;
 	private LatLng lat_lng;
 	private int seats;
 	private int floor;
 	private Order order;
 	private double balance;
-	public enum Status { FREE, RESERVED, PAID, CALLING, TO_CLEAN, NORMAL, TAKEN };
-	private Status status = FREE;
+	public enum Status { FREE, RESERVED, PAID, CALLING, TO_CLEAN, NORMAL, TAKEN }
+	private Status status = Status.FREE;
 
-	Table(String id, LatLng lat_lng, int seats, int floor, double balance)
-	{
+	Table(String id, LatLng lat_lng, int seats, int floor, double balance){
 		this.id = id;
 		this.lat_lng = lat_lng;
 		this.seats = seats;
 		this.floor = floor;
 		this.balance = balance;
+
+		allTables.add(this);
 	}
 	
 	
-	public void onCall()
-	{
-		//kaleitai otan enas pelatis pataei to TableButton
-		
-		Waiter w; //dilwnw waiter
-		w = Waiter.findBestForTable(this); //bazw sto w auto p epistrefei to findBestForTable
-		TableCallNotification n = new TableCallNotification( this, w ); // dimiourgw ena table notification n 
-		// to opoio pairnei san orisma to table kai ton waiter
-		w.notify( n ); // notify ton waiter me to notification p dimiourgi8ike	
+	public void onCall(){
+		// Called when the table's TableButton is pressed
+
+		// TODO: This is a loop
+		// Find the most suitable Waiter
+		Waiter w = Waiter.findBestForTable(this);
+		w.notify(new TableCallNotification(this, w));
 	}
 
-	public boolean onOrderPaid()
-	{
-		//kaleitai otan o servitoros epile3ei ena trapezi gia plirwmi apo tin o8oni tou
-		this.order.setPaid(); 
+	public boolean onOrderPaid(ArrayList<Product> products){		// TODO: Change parameter in CD
+		// Called when a Waiter sets some products as paid
+
+		this.order.setPaid(products);
 		return true;
 	}
 
 
-	public static Table findFreeTable(WaitingGroup wg)
-	{
-		//kaleitai apo tin WaitingGroup kai prepei na ekteleite mexri na bre8ei trapezi gia ena waitinggroup
-		
-		//den 8a tin ulopoieisoume
+	public static Table findFreeTable(WaitingGroup wg){
+		// TODO
+		return null;
 	}
 
 
-	public void setTaken()
-	{
-		//kanei ena table taken an to epile3ei o PR
-		
-		this.status = TAKEN; // allazei to status tou table pou exei bre8ei
-
+	public void setTaken(){
+		this.status = Status.TAKEN;
+	}
+	public void setReserved(){
+		this.status = Status.RESERVED;
+	}
+	public boolean isAvailable(){
+		return this.status == Status.FREE;
 	}
 
 
-	public void setReserved()
-	{
-		//kanei ena table reserved an to epile3ei o Admin
-		this.status = RESERVED;
-	}
-
-
-	public boolean isAvailable()
-	{
-		if ( this.status == FREE )
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-
-	public boolean onTopologyEdit(Bundle new_info)
-	{
-		//kalei tin validateData 
-		if ( validateData(new_info) == true )
-		{
-			//Gia ka8e Waiter w{
-				TopologyChangeNotification n = new TopologyChangeNotification( w ); // pairnei san orisma kapoion waiter
+	public boolean onTopologyEdit(Bundle new_info){
+		if(validateData(new_info)){
+			for(Waiter w : Waiter.allWaiters){
+				TopologyChangeNotification n = new TopologyChangeNotification( w );
 				w.notify(n);
-			//}
-			showSuccess("success");
+			}
+			Main.showSuccess("success");
 			return true;
-		}
-		else
-		{
-			showFailure("failure");
+		}else{
+			Main.showFailure("failure");
 			return false;
 		}
 	}
 
 
-	public boolean validateData(Bundle new_info)
-	{
+	public boolean validateData(Bundle new_info){
 
 		//elegxei tin egkurotita tis allagis stin topologia
 
-		//de 8a ulopoii8ei
+		return true;
 	}
 
 }
