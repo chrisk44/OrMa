@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 
 public class PR extends Employee {
-    static ArrayList<PR> allPRs = new ArrayList<>();
+    static ArrayList<PR> allPRs = new ArrayList<>();            // TODO: Add to CD
     private MobileDevice device;
 
-    public PR(String username, String password, double hours, boolean is_new){
-        super(username, password, hours, is_new);
+    public PR(boolean is_new){
+        super(is_new);
 
         allPRs.add(this);
     }

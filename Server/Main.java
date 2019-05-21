@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class Main{
     static final int SERVER_PORT = 3000;
@@ -13,7 +12,7 @@ public class Main{
         System.out.print("[INIT] Connecting to database...");
         // Let this be a piece of code that connects us to a database...
 
-        // Load dummy data because our puny human linear perception of time along with 3 more projects doesn't allow for this kind of implementations
+        // Load dummy data because our puny human linear perception of time doesn't allow for this kind of implementations
         // TODO: Because I am simply too lazy...
         System.out.println("OK");
 
@@ -51,6 +50,7 @@ public class Main{
 
         while(!serverSocket.isClosed()){
             Socket client;
+
             try{
                 client = serverSocket.accept();
             }catch(IOException e){
@@ -59,84 +59,10 @@ public class Main{
             }
 
             System.out.println("[+] Connection from " + client.getInetAddress().getHostAddress() + ":" + client.getPort());
-
-            // Start new thread to handle the new connection
-            new Thread(()->{
-
-                try{
-                    // Open in and out channels
-                    PrintWriter sock_in = new PrintWriter(client.getOutputStream());
-                    BufferedReader sock_out = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
-                    String req = sock_out.readLine();
-                    while(req!=null && client.isConnected()){
-                        if(serveRequest(req, client, sock_in, sock_out)) break;
-                        req = sock_out.readLine();
-                    }
-
-                    sock_in.close();
-                    sock_out.close();
-                    client.close();
-
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
-
-                System.out.println("[-] Connection " + client.getInetAddress().getHostAddress() + ":" + client.getPort() + " closed");
-
-            }).start();
+            new Session(client).start();
         }
     }
 
-    static boolean serveRequest(String req, Socket client, PrintWriter sock_in, BufferedReader sock_out){
-        // Serves the client request 'req'
-        // Returns whether the caller should close the connection
-
-        switch(req){
-            case "login":
-                try{
-                    // Read login details: type;username;pass_hash
-                    String data[] = sock_out.readLine().split(";");
-                    switch(data[0]){
-                        case "waiter":{
-                            String username = data[1];
-                            String pass_hash = data[2];
-
-                            // Assume we verify this with the database
-                            Waiter w = new Waiter(username, pass_hash, 0, false, 0, 0, 0);      // It's added to allWaiters by the constructor
-                            w.setDevice(new MobileDevice(w, client.getInetAddress()));
-                            break;
-                        }
-
-                        case "pr":{
-                            String username = data[1];
-                            String pass_hash = data[2];
-
-                            // Assume we verify this with the database
-                            PR pr = new PR(username, pass_hash, 0, false);                      // It's added to allPRs by the constructor
-                            pr.setDevice(new MobileDevice(pr, client.getInetAddress()));
-                            break;
-                        }
-
-                        default:
-                            System.out.println("[E] Received unknown login type: " + data[0]);
-                            return true;
-                    }
-
-                }catch(IOException e){
-                    e.printStackTrace();
-                    return true;
-                }
-                break;
-
-            default:
-                sock_in.println("STATUS 499 Disappointed: The server has received your request but thinks you can do better.");
-                return true;
-
-        }
-
-        return false;
-    }
     static void serveSysRequest(String req){
         // Serve commands from CLI
 

@@ -1,9 +1,11 @@
 public class PrepAreaEmployee extends Employee{
     protected PrepAreaDevice device;
 
-    public PrepAreaEmployee(String username, String password, double hours, boolean is_new, PrepAreaDevice dev){
-        super(username, password, hours, is_new);
-        this.device = dev;
+    public PrepAreaEmployee(boolean is_new){
+        super(is_new);
     }
 
+    public void setDevice(PrepAreaDevice dev){                    // TODO: Add to CD
+        this.device = dev;
+    }
 }

@@ -2,17 +2,13 @@ import java.util.ArrayList;
 
 public class Waiter extends Employee {
     static ArrayList<Waiter> allWaiters = new ArrayList<>();
-	private double cash;
-	private double pos_charges;
-	private double billing_account_charges;
+	private double cash = 0.0;
+	private double pos_charges = 0.0;
+	private double billing_account_charges = 0.0;
 	public MobileDevice device;
 
-	public Waiter(String username, String password, double hours, boolean is_new, double c, double pos_c, double bill_account){
-		super(username, password, hours, is_new);
-
-		this.cash = c;
-		this.pos_charges = pos_c;
-		this.billing_account_charges = bill_account;
+	public Waiter(boolean is_new){
+		super(is_new);
 
 		allWaiters.add(this);
 	}
@@ -29,6 +25,20 @@ public class Waiter extends Employee {
 	public boolean notify(Notification n){
 		return n.show();
 	}
+	public void addCash(double d){                              // TODO: Add to CD
+	    cash += d;
+    }
+    public void addPos(double d){                               // TODO: Add to CD
+        pos_charges += d;
+    }
+    public void addBa(double d){                                // TODO: Add to CD
+        billing_account_charges += d;
+    }
+    public void reset(){                                        // TODO: Add to CD
+        cash = 0.0;
+        pos_charges = 0.0;
+        billing_account_charges = 0.0;
+    }
 
 	public boolean editData(Bundle new_info){
 		if (validateData(new_info)){

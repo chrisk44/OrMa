@@ -1,6 +1,6 @@
 import java.net.InetAddress;
 
-public class Device {
+public abstract class Device {
     private Employee employee;
     private InetAddress ip_addr;
     
