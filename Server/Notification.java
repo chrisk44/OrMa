@@ -1,20 +1,22 @@
+import java.util.Date;
+
 abstract class Notification{
-	private static last_id = 0;
+	private static long last_id = 0;
 	protected long id;
 	protected Date timestamp;
 	protected boolean needs_response = true;
 	
 	Notification(){
-		this.id = getId();
+		this.id = getNewId();
 		this.timestamp = new Date();
 	}
-	synchronized private static getNewId(){
+	synchronized private static long getNewId(){
 		// Returns a new id
 		return last_id++;
 	}
 	boolean show(){
 		//Send notification to device
-		boolean response = device.dispatch(this);
+		boolean response = getDevice().dispatch(this);
 		
 		if(needs_response){
 			if(response){
@@ -25,11 +27,13 @@ abstract class Notification{
 				return false;
 			}
 		}
+
+		return true;
 	}
 	
 	void accept(){}
 	void reject(){}
-	Device getDevice();
+	abstract Device getDevice();
 }
 
 class OrderProblemNotification extends Notification{
@@ -43,13 +47,12 @@ class OrderProblemNotification extends Notification{
 		
 		this.order = order;
 		this.sender = sender;
-		this.device = receiver.getDevice();
 		this.receiver = receiver;
 		this.text = text;
 		this.needs_response = false;
 	}
 	
-	Device getDevice(){ return this.receiver.getDevice(); }
+	Device getDevice(){ return receiver.getDevice(); }
 }
 
 class OrderReadyNotification extends Notification{
@@ -65,7 +68,7 @@ class OrderReadyNotification extends Notification{
 		this.receiver = receiver;
 	}
 	
-	Device getDevice(){ return this.receiver.getDevice(); }
+	Device getDevice(){ return receiver.getDevice(); }
 }
 
 class TableCallNotification extends Notification{
@@ -77,10 +80,9 @@ class TableCallNotification extends Notification{
 		
 		this.table = table;
 		this.receiver = receiver;
-		this.device = receiver.getDevice();
 	}
 	
-	Device getDevice(){ return this.receiver.getDevice(); }
+	Device getDevice(){ return receiver.getDevice(); }
 }
 
 class TableFreeNotification extends Notification{
@@ -94,7 +96,6 @@ class TableFreeNotification extends Notification{
 		this.table = table;
 		this.receiver = receiver;
 		this.wg = wg;
-		this.device = receiver.getDevice();
 	}
 	
 	void accept(){
@@ -105,7 +106,7 @@ class TableFreeNotification extends Notification{
 		wg.notifyWhenAvailable();
 	}
 	
-	Device getDevice(){ return this.receiver.getDevice(); }
+	Device getDevice(){ return receiver.getDevice(); }
 }
 
 class PrepAreaNotification extends Notification{
@@ -117,10 +118,9 @@ class PrepAreaNotification extends Notification{
 		
 		this.prepArea = prepArea;
 		this.order = order;
-		this.device = prepArea.getEmployee().getDevice();
 	}
 	
-	Device getDevice(){ return this.PrepArea.employee.getDevice(); }
+	Device getDevice(){ return prepArea.employee.getDevice(); }
 }
 
 class TopologyChangeNotification extends Notification{
@@ -130,11 +130,10 @@ class TopologyChangeNotification extends Notification{
 		super();
 		
 		this.employee = employee;
-		this.device = employee.getDevice();
 		this.needs_response = false;
 	}
 	
-	Device getDevice(){ return this.employee.getDevice(); }
+	Device getDevice(){ return employee.getDevice(); }
 }
 
 class ProductPriceNotification extends Notification{
@@ -149,7 +148,7 @@ class ProductPriceNotification extends Notification{
 		this.needs_response = false;
 	}
 	
-	Device getDevice(){ return this.receiver.getDevice(); }
+	Device getDevice(){ return receiver.getDevice(); }
 }
 
 

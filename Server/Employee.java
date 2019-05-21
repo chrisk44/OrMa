@@ -3,7 +3,7 @@ abstract class Employee{
 	protected String password;
 	protected double hours_worked;
 	protected Device device;
-	boolean is_new;
+	protected boolean is_new;			// TODO: Change public->protected in CD
 
 	Employee(String username, String password, double hours, boolean is_new){
 		this.username = username;
@@ -17,13 +17,7 @@ abstract class Employee{
 	}
 	
 	boolean isNew(){
-		if (this.is_new == true){
-			return true;
-		}
-		else{
-			return false;
-		}
-					
+		return this.is_new;
 	}
 	
 }

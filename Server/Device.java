@@ -12,6 +12,8 @@ public class Device {
      public boolean dispatch(Notification n){
           //apostolh tou notification sth suskeuh kai anakthsh ths apanthshs (an uparxei, dld to n.needs_response einai true)
 
+         // TODO
+
          return true;
      }
 

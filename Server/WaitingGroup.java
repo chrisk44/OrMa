@@ -33,9 +33,9 @@ public class WaitingGroup {
             }
 
             // Notify all PRs
-            for(PR pr : Main.PRs)
+            for(PR pr : PR.allPRs)
                 new TableFreeNotification(t, pr, WaitingGroup.this).show();
-        });
+        }).start();
 
 	}
 

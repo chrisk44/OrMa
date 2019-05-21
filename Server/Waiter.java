@@ -7,13 +7,12 @@ public class Waiter extends Employee {
 	private double billing_account_charges;
 	public MobileDevice device;
 
-	public Waiter(String username, String password, double hours, boolean is_new, double c, double pos_c, double bill_account, MobileDevice dev){
+	public Waiter(String username, String password, double hours, boolean is_new, double c, double pos_c, double bill_account){
 		super(username, password, hours, is_new);
 
 		this.cash = c;
 		this.pos_charges = pos_c;
 		this.billing_account_charges = bill_account;
-		this.device = dev;
 
 		allWaiters.add(this);
 	}
@@ -23,7 +22,10 @@ public class Waiter extends Employee {
 
 	    return null;
 	}
-	
+
+	public void setDevice(MobileDevice dev){                    // TODO: Add to CD
+	    this.device = dev;
+    }
 	public boolean notify(Notification n){
 		return n.show();
 	}
