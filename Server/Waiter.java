@@ -35,5 +35,10 @@ public class Waiter extends Employee {
         pos_charges = 0.0;
         billing_account_charges = 0.0;
     }
+    public LatLng getLocation(){
+	    // Contact the device and get its location
+        // TODO
 
+        return new LatLng(0, 0);
+    }
 }

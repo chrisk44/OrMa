@@ -13,11 +13,14 @@ public class BillingAccount {
 
         allAccounts.add(this);
     }
+
     void charge(double amount){
         balance += amount;
 
         // Save to database
     }
+    String getName(){ return this.name; }               // TODO: Add to CD
+    double getBalance(){ return this.balance; }         // TODO: Add to CD
 
     static BillingAccount getAccountById(long id){
         // THIS IS A BAD IMPLEMENTATION but I don't care

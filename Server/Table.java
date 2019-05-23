@@ -23,11 +23,20 @@ public class Table {
 	public void onCall(){
 		// Called when the table's TableButton is pressed
 
-		// TODO: Maybe in a different thread ??
-		// TODO: This is a loop
-		// Find the most suitable Waiter
-		Waiter w = Waiter.findBestForTable(this);
-		w.notify(new TableCallNotification(this, w));
+		new Thread(() -> {
+
+			// Find the most suitable Waiter
+			Waiter w;
+			do{
+				w = Waiter.findBestForTable(this);
+				if(w==null){
+					new Exception("onCall called without any Waiters logged in").printStackTrace();
+					break;
+				}
+			}while(w.notify(new TableCallNotification(this, w)));
+
+
+		}).start();
 	}
 	public void onOrderPaid(ArrayList<Product> products){
 		// Called when a Waiter sets some products as paid
@@ -35,11 +44,25 @@ public class Table {
 		this.order.setPaid(products);
 	}
 	public static Table findFreeTable(WaitingGroup wg){
-		// TODO
+		// Find a free table in which this WaitingGroup can fit
+		for(Table t : allTables){
+			if(t.isAvailable() && t.seats<=wg.getNumOfPeople()){
+				return t;
+			}
+		}
+
 		return null;
 	}
 
 
+	public void setOrder(Order order){				// TODO: Add to CD
+		if(getBalance() > 0.0){
+			System.out.println("[E:Table] There is a pending order, can't set a new one");
+			return;
+		}
+
+		this.order = order;
+	}
 	public void setTaken(){
 		this.status = Status.TAKEN;
 	}
@@ -78,11 +101,11 @@ public class Table {
 		// TODO ?
 		return -1;
 	}
-
+	Order getOrder(){ return this.order; }			// TODO: Add to CD
 	double getBalance(){
 		return this.order==null ? 0.0 : order.getBalance();
 	}
-
+	LatLng getLocation(){ return this.lat_lng; }	// TODO: Add to CD
 
 	public static Table getTableById(long id){
 		// THIS IS A VERY BAD IMPLEMENTATION but I don't care

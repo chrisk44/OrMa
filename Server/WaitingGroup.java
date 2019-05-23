@@ -14,6 +14,7 @@ public class WaitingGroup {
 
 	}
 
+	public int getNumOfPeople(){ return number_of_people; }			// TODO: Add to CD
 	public void remove(){
 		waitingList.remove(this);
 	}

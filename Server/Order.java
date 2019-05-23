@@ -46,6 +46,10 @@ class Order{
 
 	void send(){
 		PrepArea prepArea = PrepArea.findBestForOrder(this);
+		if(prepArea==null){
+			new Exception("Called send() without any PrepAreas in the system").printStackTrace();
+			return;
+		}
 		prepArea.showNewOrder(this);
 	}
 
@@ -67,6 +71,10 @@ class Order{
 		OrderReadyNotification n;
 		do{
 			w = Waiter.findBestForTable(this.table);	// TODO: Estw oti ka8e fora epistrefei allon Waiter
+			if(w==null){
+				new Exception("called setReady() without any Waiters logged in").printStackTrace();
+				break;
+			}
 			n = new OrderReadyNotification(this, this.assigned_prepArea, w);
 		}while(w.notify(n));
 
@@ -83,7 +91,8 @@ class Order{
 	boolean isAssigned(){
 		return this.assigned_prepArea != null;
 	}
-
+	long getId(){ return this.id; }						// TODO: Add to CD
+	Table getTable(){ return this.table; }				// TODO: Add to CD
 	double getBalance(){
 		double balance = 0.0;
 
@@ -107,9 +116,5 @@ class Order{
 
 		return null;
 	}
-	static List<Order> findBestCombination(List<Order> orders){
-		ArrayList<Order> result = new ArrayList<>();
-
-		return result;
-	}
+//	static List<Order> findBestCombination(List<Order> orders)		TODO: Remove from CD
 }

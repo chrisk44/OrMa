@@ -3,8 +3,8 @@ import java.net.InetAddress;
 public class TableButton extends Device {
       private Table table;
       
-      public TableButton(Employee empl, InetAddress ip_addr, Table t){
-          super(empl, ip_addr);
+      public TableButton(InetAddress ip_addr, Table t){
+          super(null, ip_addr);
           this.table = t; 
       }
 }

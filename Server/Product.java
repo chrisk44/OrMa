@@ -83,7 +83,7 @@ class Product{
 		return null;
 	}
 	public static Product getOfferForClient(long client_id){
-
+		// TODO ?
 		return null;
 	}
 }

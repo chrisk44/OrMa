@@ -1,13 +1,12 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class Main{
     static final int SERVER_PORT = 3000;
     static ServerSocket serverSocket;
-
-    static ArrayList<Notification> pending_notifications = new ArrayList<>();
 
     public static void main(String[] args){
         // Connect to database
@@ -16,7 +15,9 @@ public class Main{
 
         // Load dummy data because our puny human linear perception of time doesn't allow for this kind of implementations
         // TODO: Because I am simply too lazy...
+
         System.out.println("OK");
+        new Exception("test").printStackTrace();
 
         System.out.print("[INIT] Starting thread for manual input handling...");
         new Thread(() -> {

@@ -17,7 +17,7 @@ public class Session{
                         REQ_EDIT_ORDER = "edit_order",          /* Sequence 1 */
                         REQ_SEND_ORDER = "send_order",          /* Sequence 2 */
                         REQ_AUTO_ASSIGN = "auto_assign",        /* Sequence 2 */
-                        REQ_MAN_ASSIGN = "man_assign",          /* Sequence 2 */
+                        REQ_ASSIGN_ORDERS = "assign_orders",    /* Sequence 2 */
                         REQ_MARK_READY = "mark_ready",          /* Sequence 8 */
                         REQ_PAY_ORDER = "pay_order",            /* Sequence 3 */
                         REQ_ADD_TO_WL = "add_to_wl",            /* Sequence 4 */
@@ -50,17 +50,17 @@ public class Session{
 
     void start(){
         if(!valid){
-            System.out.println("[E] Tried to start an invalid session");
+            new Exception("Tried to start an invalid session").printStackTrace();
             return;
         }
 
         new Thread(()->{
 
             try{
-                String req = sock_out.readLine();
+                String req = readString();
                 while(req!=null && socket.isConnected()){
                     if(serveRequest(req)) break;
-                    req = sock_out.readLine();
+                    req = readString();
                 }
 
             }catch(IOException e){
@@ -86,10 +86,10 @@ public class Session{
         }
     }
     String readString() throws IOException{ return sock_out.readLine(); }
-    long readLong() throws IOException{ return Long.parseLong(sock_out.readLine()); }
-    int readInt() throws IOException{ return Integer.parseInt(sock_out.readLine()); }
-    double readDouble() throws IOException{ return Double.parseDouble(sock_out.readLine()); }
-    boolean readBoolean() throws IOException{ return Boolean.parseBoolean(sock_out.readLine()); }
+    long readLong() throws IOException{ return Long.parseLong(readString()); }
+    int readInt() throws IOException{ return Integer.parseInt(readString()); }
+    double readDouble() throws IOException{ return Double.parseDouble(readString()); }
+    boolean readBoolean() throws IOException{ return Boolean.parseBoolean(readString()); }
 
     boolean serveRequest(String req){
         // Serves the client request 'req'
@@ -100,17 +100,12 @@ public class Session{
                 case REQ_LOGIN:{
                     /*
                      * Format:
-                     * type\n  <-- waiter | pr | prepArea
+                     * type\n  <-- waiter | pr | prepArea | tableButton
                      * username;password_hash\n
                      *
                      * Respond with waiter id or fail
                      */
                     String[] data = readString().split(";");
-
-                    /*
-                     * Implementation starts here
-                     */
-
                     switch(data[0]){
                         case "waiter":{
                             String username = data[1];
@@ -152,8 +147,22 @@ public class Session{
                             break;
                         }
 
+                        case "tableButton":{
+                            long table_id = Long.parseLong(data[1]);
+                            String preshared_hash = data[2];
+                            // Assume we verify this with the database
+
+                            Table table = Table.getTableById(table_id);
+                            if(table==null){
+                                new Exception("Tried to log in as tableButton with invalid table_id").printStackTrace();
+                                return true;
+                            }
+
+                            this.device = new TableButton(socket.getInetAddress(), table);
+                        }
+
                         default:
-                            System.out.println("[E] Received unknown login type: "+data[0]);
+                            new Exception("Received unknown login type: "+data[0]).printStackTrace();
                             return true;
                     }
                     break;
@@ -167,17 +176,13 @@ public class Session{
                      * Respond with ok
                      */
 
-                    long id = Long.parseLong(sock_out.readLine());
+                    long id = readLong();
 
                     Table t = Table.getTableById(id);
                     if(t==null){
-                        System.out.println("[E] TableCall for non-existent table");
+                        new Exception("TableCall for non-existent table").printStackTrace();
                         return true;
                     }
-
-                    /*
-                     * Implementation starts here
-                     */
 
                     t.onCall();
                     respond(RES_OK);
@@ -193,7 +198,21 @@ public class Session{
                      * Create a new order and respond with its id, or failed if the table already has an order
                      */
 
-                    // TODO
+                    Table table = Table.getTableById(readLong());
+                    if(table==null){
+                        new Exception("Asked to create new order for non-existent table").printStackTrace();
+                        return true;
+                    }
+
+                    if(table.getBalance()>0){
+                        new Exception("Table has a pending order, can't create a new one").printStackTrace();
+                        respond(RES_FAIL);
+                        return true;
+                    }
+
+                    long new_id = Order.allOrders.size()+1;         // This should be changed to something more multi-thread-safe
+                    table.setOrder( new Order(new_id, table) );
+                    respond(RES_OK);
 
                     break;
                 }
@@ -213,33 +232,29 @@ public class Session{
                     ArrayList<Product> products = new ArrayList<>();
                     ArrayList<Integer> actions = new ArrayList<>();
 
-                    Order order = Order.getOrderById(Long.parseLong(sock_out.readLine()));
+                    Order order = Order.getOrderById(readLong());
                     if(order==null){
-                        System.out.println("[E] Tried to edit non-existent order");
+                        new Exception("Tried to edit non-existent order").printStackTrace();
                         return true;
                     }
 
-                    int num_of_products = Integer.parseInt(sock_out.readLine());
+                    int num_of_products = readInt();
                     String[] data;
                     Product p;
                     int action;
                     for(int i = 0;i<num_of_products;i++){
-                        data = sock_out.readLine().split(";");
+                        data = readString().split(";");
                         p = Product.getProductById(data[1]);
                         action = Integer.parseInt(data[0]);
 
                         if(p==null){
-                            System.out.println("[E] Invalid product id");
+                            new Exception("Invalid product id").printStackTrace();
                             return true;
                         }
 
                         products.add(p);
                         actions.add(action);
                     }
-
-                    /*
-                     * Implementation starts here
-                     */
 
                     if(order.onEdit(products, actions)){
                         order.addWaiter((Waiter)(this.device.getEmployee()));
@@ -257,17 +272,13 @@ public class Session{
                      * Respond with ok
                      */
 
-                    long order_id = Long.parseLong(sock_out.readLine());
+                    long order_id = readLong();
 
                     Order order = Order.getOrderById(order_id);
                     if(order==null){
-                        System.out.println("[E] Tried to send non-existent order");
+                        new Exception("Tried to send non-existent order").printStackTrace();
                         return true;
                     }
-
-                    /*
-                     * Implementation starts here
-                     */
 
                     order.send();
                     order.addWaiter((Waiter)(this.device.getEmployee()));
@@ -277,11 +288,60 @@ public class Session{
                 }
 
                 case REQ_AUTO_ASSIGN:{
+                    /*
+                     * Format:
+                     * nothing
+                     *
+                     * Respond with list of orders:
+                     * num_of_orders\n
+                     * order_id\n
+                     * order_id\n
+                     * ...
+                     */
+
+                    PrepArea currentPA = ((PrepAreaDevice)(this.device)).getPrepArea();
+                    ArrayList<Order> orders = currentPA.findBestCombination();
+
+                    respond(Integer.toString(orders.size()));
+                    for(Order o : orders){
+                        respond(Long.toString(o.getId()));
+                    }
 
                     break;
                 }
 
-                case REQ_MAN_ASSIGN:{
+                case REQ_ASSIGN_ORDERS:{
+                    /*
+                     * Format:
+                     * num_of_orders\n
+                     * order_id\n
+                     * order_id\n
+                     * ...
+                     *
+                     * Respond with ok
+                     */
+
+                    int num_of_orders = readInt();
+                    for(int i=0; i<num_of_orders; i++){
+                        Order o = Order.getOrderById(readLong());
+
+                        if(o!=null){
+
+                            PrepArea best = PrepArea.findBestForOrder(o);
+                            if(best==null){
+                                new Exception("Called assign_orders without any PrepAreas in the system").printStackTrace();
+                                return true;
+                            }
+
+                            o.assignOrder(best);
+
+                        }else{
+                            new Exception("Tried to assign non-existent order").printStackTrace();
+                            return true;
+                        }
+                    }
+
+                    respond(RES_OK);
 
                     break;
                 }
@@ -294,15 +354,13 @@ public class Session{
                      * Respond with ok
                      */
 
-                    /*
-                     * Implementation starts here
-                     */
-
-                    for(Order o : Order.allOrders){
-                        if(o.getAssignedArea() == ((PrepAreaDevice)(this.device)).getPrepArea()){
-                            o.setReady();
-                        }
+                    PrepArea currentPA = ((PrepAreaDevice)(this.device)).getPrepArea();
+                    for(Order o : currentPA.getAssignedOrders()){
+                        o.setReady();
                     }
+
+                    currentPA.clearAssignedOrders();
+
                     break;
                 }
 
@@ -319,26 +377,22 @@ public class Session{
                      * Respond with ok when done
                      */
 
-                    long table_id = Long.parseLong(sock_out.readLine());
+                    long table_id = readLong();
 
                     Table table = Table.getTableById(table_id);
                     if(table==null){
-                        System.out.println("[E] Tried to pay for non-existent table");
+                        new Exception("Tried to pay for non-existent table").printStackTrace();
                         return true;
                     }
 
                     int payment_type = readInt();
 
                     ArrayList<Product> products = new ArrayList<>();
-                    int num_of_products = Integer.parseInt(sock_out.readLine());
+                    int num_of_products = readInt();
 
                     for(int i = 0;i<num_of_products;i++){
-                        products.add(Product.getProductById(sock_out.readLine()));
+                        products.add(Product.getProductById(readString()));
                     }
-
-                    /*
-                     * Implementation starts here
-                     */
 
                     table.onOrderPaid(products);
                     respond(RES_OK);
@@ -361,7 +415,7 @@ public class Session{
                         default:
                             BillingAccount ba = BillingAccount.getAccountById(payment_type);
                             if(ba==null){
-                                System.out.println("[E] Tried to charge a non-existent billing account");
+                                new Exception("Tried to charge a non-existent billing account").printStackTrace();
                                 return true;
                             }
                             ba.charge(total);
@@ -382,13 +436,9 @@ public class Session{
                      * Respond with ok
                      */
 
-                    String name = sock_out.readLine();
-                    int num_of_people = Integer.parseInt(sock_out.readLine());
-                    int priority = Integer.parseInt(sock_out.readLine());
-
-                    /*
-                     * Implementation starts here
-                     */
+                    String name = readString();
+                    int num_of_people = readInt();
+                    int priority = readInt();
 
                     WaitingGroup wg = new WaitingGroup(name, num_of_people, priority);
                     WaitingGroup.addToList(wg);
@@ -406,17 +456,13 @@ public class Session{
                      * Repond with ok or failed
                      */
 
-                    long table_id = Long.parseLong(sock_out.readLine());
+                    long table_id = readLong();
 
                     Table table = Table.getTableById(table_id);
                     if(table==null){
-                        System.out.println("[E] Tried to setReserved a non-existent table");
+                        new Exception("Tried to setReserved a non-existent table").printStackTrace();
                         return true;
                     }
-
-                    /*
-                     * Implementation starts here
-                     */
 
                     if(table.isAvailable()){
                         table.setReserved();
@@ -438,20 +484,16 @@ public class Session{
                      * Respond with ok or failed
                      */
 
-                    long employee_id = Long.parseLong(sock_out.readLine());
+                    long employee_id = readLong();
                     Employee empl = Employee.getEmployeeById(employee_id);
 
                     if(empl==null){
-                        System.out.println("[E] Tried to edit non-existent employee");
+                        new Exception("Tried to edit non-existent employee").printStackTrace();
                         return true;
                     }
 
                     Bundle bundle = new Bundle();
-                    bundle.put("is_new", Boolean.parseBoolean(sock_out.readLine()));
-
-                    /*
-                     * Implementation starts here
-                     */
+                    bundle.put("is_new", readBoolean());
 
                     respond( empl.editData(bundle) ? RES_OK : RES_FAIL);
 
@@ -469,10 +511,6 @@ public class Session{
                     Bundle bundle = new Bundle();
                     // Fill bundle with data from sock_out
 
-                    /*
-                     * Implementation starts here
-                     */
-
                     respond( Table.onTopologyEdit(bundle) ? RES_OK : RES_FAIL);
 
                     break;
@@ -487,21 +525,17 @@ public class Session{
                      * ...
                      */
 
-                    String product_id = sock_out.readLine();
+                    String product_id = readString();
 
                     Product product = Product.getProductById(product_id);
                     if(product==null){
-                        System.out.println("[E] Tried to edit non-existent product");
+                        new Exception("Tried to edit non-existent product").printStackTrace();
                         return true;
                     }
 
                     Bundle bundle = new Bundle();
-                    bundle.put("price", Double.parseDouble(sock_out.readLine()));
-                    bundle.put("description", sock_out.readLine());
-
-                    /*
-                     * Implementation starts here
-                     */
+                    bundle.put("price", readDouble());
+                    bundle.put("description", readString());
 
                     respond( product.onEdit(bundle) ? RES_OK : RES_FAIL );
 
@@ -519,13 +553,9 @@ public class Session{
                     long table_id = readLong();
                     Table table = Table.getTableById(table_id);
                     if(table==null){
-                        System.out.println("[E] Tried to get offer for non-existent table");
+                        new Exception("Tried to get offer for non-existent table").printStackTrace();
                         return true;
                     }
-
-                    /*
-                     * Implementation starts here
-                     */
 
                     long client_id = table.getClient();
                     if(client_id != -1){
@@ -542,7 +572,7 @@ public class Session{
                 }
 
                 default:
-                    sock_in.println("STATUS 499 Disappointed: The server has received your request but thinks you can do better.");
+                    respond("STATUS 499 Disappointed: The server has received your request but thinks you can do better.");
                     return true;
 
             }
