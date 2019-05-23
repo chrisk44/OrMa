@@ -1,11 +1,13 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Main{
     static final int SERVER_PORT = 3000;
-
     static ServerSocket serverSocket;
+
+    static ArrayList<Notification> pending_notifications = new ArrayList<>();
 
     public static void main(String[] args){
         // Connect to database
@@ -80,12 +82,5 @@ public class Main{
             e.printStackTrace();
         }
         System.exit(0);
-    }
-
-    static void showSuccess(String message){
-        System.out.println("showSuccess(): " + message);
-    }
-    static void showFailure(String message){
-        System.out.println("showFailure(): " + message);
     }
 }

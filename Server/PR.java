@@ -1,16 +1,15 @@
 import java.util.ArrayList;
 
 public class PR extends Employee {
-    static ArrayList<PR> allPRs = new ArrayList<>();            // TODO: Add to CD
-    private MobileDevice device;
+    static ArrayList<PR> allPRs = new ArrayList<>();
 
-    public PR(boolean is_new){
-        super(is_new);
+    public PR(long id, boolean is_new){
+        super(id, is_new);
 
         allPRs.add(this);
     }
 
-    public void setDevice(MobileDevice dev){                    // TODO: Add to CD
+    public void setDevice(MobileDevice dev){
         this.device = dev;
     }
 }

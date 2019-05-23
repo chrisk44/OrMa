@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 class Product{
 	enum ProductType{ PRODUCT_DRINK, PRODUCT_FOOD, PRODUCT_OTHER }
 	double price;
@@ -7,6 +9,7 @@ class Product{
 	int stock;
 	boolean has_alcohol;
 	double time_to_prepare;
+	static ArrayList<Product> allProducts = new ArrayList<>();
 	
 	Product(String id, String description, double price, ProductType type, int stock, boolean has_alcohol, double time_to_prepare){
 		this.id = id;
@@ -16,11 +19,13 @@ class Product{
 		this.stock = stock;
 		this.has_alcohol = has_alcohol;
 		this.time_to_prepare = time_to_prepare;
+
+		allProducts.add(this);
 	}
 	
 	boolean isCurrentlyInOrder(){
 		for(Order order : Order.allOrders){
-			if(order.products.contains(this)) return true;
+			if(order.products.contains(this) && !order.products_paid.contains(this)) return true;
 		}
 		return false;
 	}
@@ -34,13 +39,8 @@ class Product{
 		return true;
 	}
 	
-	void onEdit(Bundle new_info){
+	boolean onEdit(Bundle new_info){
 		if(validateData(new_info)){
-			Main.showSuccess("Successful update");
-			for(Waiter w : Waiter.allWaiters){
-				new ProductPriceNotification(this, w).show();
-			}
-			
 			// Update the data info
 			this.description = new_info.getString("description");
 			this.price = new_info.getDouble("price");
@@ -58,11 +58,32 @@ class Product{
 					this.type = ProductType.PRODUCT_OTHER;
 					break;
 			}
-			
-			// Somehow save to database
-			// ...
+
+			// Save to database
+
+			// Notify waiters
+			for(Waiter w : Waiter.allWaiters){
+				new ProductPriceNotification(this, w).show();
+			}
+
+			return true;
 		}else{
-			Main.showFailure("Update failed");
+			return false;
 		}
+	}
+
+	public static Product getProductById(String id){
+		// THIS IS A VERY BAD IMPLEMENTATION but I don't care
+
+		for(Product p : allProducts){
+			if(p.id.equals(id))
+				return p;
+		}
+
+		return null;
+	}
+	public static Product getOfferForClient(long client_id){
+
+		return null;
 	}
 }

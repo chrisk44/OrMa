@@ -17,4 +17,8 @@ public abstract class Device {
          return true;
      }
 
+     public Employee getEmployee(){
+         return employee;
+     }
+
 }

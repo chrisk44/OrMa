@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Date;
 
 abstract class Notification{
@@ -79,7 +80,7 @@ class TableCallNotification extends Notification{
 		super();
 		
 		this.table = table;
-		this.receiver = receiver;
+		this.receiver = waiter;
 	}
 	
 	Device getDevice(){ return receiver.getDevice(); }
@@ -112,12 +113,16 @@ class TableFreeNotification extends Notification{
 class PrepAreaNotification extends Notification{
 	private PrepArea prepArea;
 	private Order order;
-	
-	PrepAreaNotification(PrepArea prepArea, Order order){
+	private ArrayList<Product> products;
+	private ArrayList<Integer> actions;
+
+	PrepAreaNotification(PrepArea prepArea, Order order, ArrayList<Product> products, ArrayList<Integer> actions){
 		super();
 		
 		this.prepArea = prepArea;
 		this.order = order;
+		this.products = products;
+		this.actions = actions;
 	}
 	
 	Device getDevice(){ return prepArea.employee.getDevice(); }
