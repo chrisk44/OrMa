@@ -28,7 +28,21 @@ class PrepArea{
 	}
 
     public String toString(){
-        return "(PrepArea: id=" + id + ", Location=" + lat_lng.toString() + ")";
+	    String str = "(PrepArea: id=" + id + ", Location=" + lat_lng.toString() + ", [ ";
+
+	    for(Order o : orders){
+	        str += o.getId() + " ";
+        }
+	    str += "], [ ";
+	    for(Order o : assigned_orders){
+	        str += o.getId() + " ";
+        }
+	    str += "], [ ";
+	    for(Order o : rejected_orders){
+	        str += o.getId() + " ";
+        }
+
+	    return str + "])";
     }
 
 	ArrayList<Order> findBestCombination(){		// TODO: Add to CD
@@ -66,6 +80,7 @@ class PrepArea{
 	
 	void showNewOrder(Order o){
 		orders.add(o);
+		System.out.println("Sending order " + o.getId() + " to " + this.toString());
 		
 		// Send the new order to (PrepAreaDevice) (employee.getDevice())
 	}

@@ -11,12 +11,12 @@ public class Session{
                         RES_FAIL = "fail";
 
     // Requests
-    static final String REQ_LOGIN = "login",
-                        REQ_NEW_ORDER = "new_order",
-                        REQ_EXIT = "exit",
-                        REQ_TB_CALL = "tb_call",                /* Sequence 1, 3, 10 */
-                        REQ_EDIT_ORDER = "edit_order",          /* Sequence 1 */
-                        REQ_SEND_ORDER = "send_order",          /* Sequence 2 */
+    static final String REQ_LOGIN = "login",                                                // correctly returns 5 (dummy id)
+                        REQ_NEW_ORDER = "new_order",                                        // correctly creates the order
+                        REQ_EXIT = "exit",                                                  // correctly closes the connection
+                        REQ_TB_CALL = "tb_call",                /* Sequence 1, 3, 10 */     // correctly sends notification, and re-sends it after rejection
+                        REQ_EDIT_ORDER = "edit_order",          /* Sequence 1 */            // correctly edits the order
+                        REQ_SEND_ORDER = "send_order",          /* Sequence 2 */            // correctly sends the order, correctly changes the prepArea when it's after rejection
                         REQ_AUTO_ASSIGN = "auto_assign",        /* Sequence 2 */
                         REQ_ASSIGN_ORDERS = "assign_orders",    /* Sequence 2 */
                         REQ_MARK_READY = "mark_ready",          /* Sequence 8 */
@@ -215,9 +215,9 @@ public class Session{
                         return true;
                     }
 
-                    long new_id = Order.allOrders.size()+1;         // This should be changed to something more multi-thread-safe
+                    long new_id = Order.allOrders.size()+1;          // This should be changed to something more multi-thread-safe
                     table.setOrder( new Order(new_id, table) );
-                    respond(RES_OK);
+                    respond(Long.toString(table.getOrder().getId()));
 
                     break;
                 }
@@ -262,11 +262,12 @@ public class Session{
                     }
 
                     if(order.onEdit(products, actions)){
-                        order.addWaiter((Waiter)(this.device.getEmployee()));
                         respond(RES_OK);
                     }else{
                         respond(RES_FAIL);
                     }
+
+                    break;
                 }
 
                 case REQ_SEND_ORDER:{
@@ -463,7 +464,7 @@ public class Session{
                      * Format:
                      * table_id\n
                      *
-                     * Repond with ok or failed
+                     * Respond with ok or failed
                      */
 
                     long table_id = readLong();
@@ -515,7 +516,7 @@ public class Session{
                      * Format:
                      * no idea
                      *
-                     * Reponds with ok or failed
+                     * Respond with ok or failed
                      */
 
                     Bundle bundle = new Bundle();
@@ -533,6 +534,8 @@ public class Session{
                      * price\n
                      * description\n
                      * ...
+                     *
+                     * Respond with ok or fail
                      */
 
                     long product_id = readLong();

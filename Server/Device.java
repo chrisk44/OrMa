@@ -14,14 +14,15 @@ public abstract class Device {
          // if (n.needs_response) then get response and return it
 
          // Dummy Implementation
-         System.out.println("[Notification] Sending notification to device " + n.getDevice().ip_addr.getHostAddress() + "... (waiting 5 seconds to return true");
+         boolean resp = Main.r.nextBoolean();
+         System.out.println("[Notification] Sending notification to device " + n.getDevice().ip_addr.getHostAddress() + "... (waiting 5 seconds to return " + resp + ")");
          try{
              Thread.sleep(5000);
          }catch(InterruptedException ignored){}
 
          // TODO
 
-         return true;
+         return resp;
      }
 
      public Employee getEmployee(){

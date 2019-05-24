@@ -57,8 +57,8 @@ public class Waiter extends Employee {
     public LatLng getLocation(){
 	    // Contact the device and get its location
 
-        // TODO: Retrieve dummy location from device
+        // TODO: Retrieve location from device
 
-        return new LatLng(0, 0);
+        return new LatLng(Main.r.nextDouble(), Main.r.nextDouble());
     }
 }

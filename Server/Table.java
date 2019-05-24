@@ -25,7 +25,7 @@ public class Table {
 	}
 
 	public String toString(){
-		return "(Table: id=" + id + ", Location=" + lat_lng.toString() + ", Seats=" + seats + ", order=" + order.getId() + ")";
+		return "(Table: id=" + id + ", Location=" + lat_lng.toString() + ", Seats=" + seats + ", order=" + (order==null ? "null" : order.getId()) + ")";
 	}
 	
 	public void onCall(){

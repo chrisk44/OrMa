@@ -19,7 +19,7 @@ class Order{
 	}
 
 	public String toString(){
-		String str = "(Order: id=" + id + ", table=" + table.getId() + ", PA=" + assigned_prepArea.getId() + "[ ";
+		String str = "(Order: id=" + id + ", table=" + table.getId() + ", PA=" + (assigned_prepArea==null ? "null" : assigned_prepArea.getId()) + ", [ ";
 
 		for(Product p : products){
 			str += p.getId() + " ";
@@ -51,7 +51,6 @@ class Order{
 					this.products.remove(products.get(i));
 				}
 			}
-			send();
 			return true;
 		}else{
 			return false;
@@ -64,6 +63,7 @@ class Order{
 			new Exception("Called send() without any PrepAreas in the system").printStackTrace();
 			return;
 		}
+		assigned_prepArea = prepArea;
 		prepArea.showNewOrder(this);
 	}
 
