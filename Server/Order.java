@@ -18,6 +18,20 @@ class Order{
 		allOrders.add(this);
 	}
 
+	public String toString(){
+		String str = "(Order: id=" + id + ", table=" + table.getId() + ", PA=" + assigned_prepArea.getId() + "[ ";
+
+		for(Product p : products){
+			str += p.getId() + " ";
+		}
+		str += "], [ ";
+		for(Product p : products_paid){
+			str += p.getId() + " ";
+		}
+
+		return str + "])";
+	}
+
 	boolean onEdit(ArrayList<Product> products, ArrayList<Integer> actions){
 		
 		boolean flag = true;
@@ -67,16 +81,24 @@ class Order{
 	}
 
 	void setReady(){
-		Waiter w;
-		OrderReadyNotification n;
-		do{
-			w = Waiter.findBestForTable(this.table);	// TODO: Estw oti ka8e fora epistrefei allon Waiter
+
+		ArrayList<Waiter> rejected = new ArrayList<>();
+
+		while(true){
+
+			Waiter w = Waiter.findBestForTable(this.table, rejected);
 			if(w==null){
 				new Exception("called setReady() without any Waiters logged in").printStackTrace();
 				break;
 			}
-			n = new OrderReadyNotification(this, this.assigned_prepArea, w);
-		}while(w.notify(n));
+
+			// If the waiter accepted it, we are done, else try again
+			if(w.notify( new OrderReadyNotification(this, this.assigned_prepArea, w)) )
+				break;
+			else
+				rejected.add(w);
+
+		}
 
 		this.assigned_prepArea = null;
 	}
@@ -86,7 +108,6 @@ class Order{
 	void setPrepArea(PrepArea prepArea){
 		this.assigned_prepArea = prepArea;
 	}
-
 
 	boolean isAssigned(){
 		return this.assigned_prepArea != null;
@@ -98,7 +119,7 @@ class Order{
 
 		for(Product p : products){
 			if(!products_paid.contains(p)){
-				balance += p.price;
+				balance += p.getPrice();
 			}
 		}
 

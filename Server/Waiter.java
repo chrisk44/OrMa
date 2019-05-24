@@ -12,10 +12,29 @@ public class Waiter extends Employee {
 		allWaiters.add(this);
 	}
 
-	public static Waiter findBestForTable(Table t){
- 		// TODO
+	public static Waiter findBestForTable(Table t, ArrayList<Waiter> rejected){     // TODO: change parameter in CD
+	    // Try not to return anyone included in rejected list
 
-	    return null;
+        /*
+         * This will involve some kind of dark magic that I'm currently too busy to come up with
+         * Just returns the closest waiter that isn't on the rejected list (if everyone is on the list, returns the first waiter)
+         */
+
+        LatLng tLocation = t.getLocation();
+
+        Waiter best = allWaiters.get(0);
+        double min_dist = tLocation.dist(best.getLocation());
+
+        double tmp;
+        for(Waiter w : allWaiters){
+            tmp = tLocation.dist(w.getLocation());
+            if(tmp < min_dist && !rejected.contains(w)){
+                min_dist = tmp;
+                best = w;
+            }
+        }
+
+        return best;
 	}
 
 	public void setDevice(MobileDevice dev){
@@ -37,7 +56,8 @@ public class Waiter extends Employee {
     }
     public LatLng getLocation(){
 	    // Contact the device and get its location
-        // TODO
+
+        // TODO: Retrieve dummy location from device
 
         return new LatLng(0, 0);
     }

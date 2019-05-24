@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public class Table {
+	static long last_id = 0;								// For debugging, no need to add in CD
 	static ArrayList<Table> allTables = new ArrayList<>();
 	private long id;
 	private LatLng lat_lng;
@@ -17,8 +18,15 @@ public class Table {
 		this.floor = floor;
 
 		allTables.add(this);
+
+		if(id == -1){
+			this.id = ++last_id;
+		}
 	}
-	
+
+	public String toString(){
+		return "(Table: id=" + id + ", Location=" + lat_lng.toString() + ", Seats=" + seats + ", order=" + order.getId() + ")";
+	}
 	
 	public void onCall(){
 		// Called when the table's TableButton is pressed
@@ -26,14 +34,24 @@ public class Table {
 		new Thread(() -> {
 
 			// Find the most suitable Waiter
-			Waiter w;
-			do{
-				w = Waiter.findBestForTable(this);
+			ArrayList<Waiter> rejected = new ArrayList<>();
+
+			while(true){
+
+				Waiter w = Waiter.findBestForTable(this, rejected);
 				if(w==null){
-					new Exception("onCall called without any Waiters logged in").printStackTrace();
+					new Exception("onCall: Waiter.findBestForTable returned null").printStackTrace();
 					break;
 				}
-			}while(w.notify(new TableCallNotification(this, w)));
+
+				// If the waiter accepted it, we are done, else try again
+				if(w.notify( new TableCallNotification(this, w)) ){
+					break;
+				}else{
+					rejected.add(w);
+				}
+
+			}
 
 
 		}).start();
@@ -102,6 +120,7 @@ public class Table {
 		return -1;
 	}
 	Order getOrder(){ return this.order; }			// TODO: Add to CD
+	long getId(){ return this.id; }					// TODO: Add to CD
 	double getBalance(){
 		return this.order==null ? 0.0 : order.getBalance();
 	}

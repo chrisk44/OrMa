@@ -1,17 +1,18 @@
 import java.util.ArrayList;
 
 class Product{
-	enum ProductType{ PRODUCT_DRINK, PRODUCT_FOOD, PRODUCT_OTHER }
-	double price;
-	String id;
-	String description;
-	ProductType type;
-	int stock;
-	boolean has_alcohol;
-	double time_to_prepare;
+	static long last_id = 0;
 	static ArrayList<Product> allProducts = new ArrayList<>();
+	enum ProductType{ PRODUCT_DRINK, PRODUCT_FOOD, PRODUCT_OTHER }
+	private double price;
+	private long id;				// TODO: Change type in CD
+	private String description;
+	private ProductType type;
+	private int stock;
+	private boolean has_alcohol;
+	private double time_to_prepare;
 	
-	Product(String id, String description, double price, ProductType type, int stock, boolean has_alcohol, double time_to_prepare){
+	Product(long id, String description, double price, ProductType type, int stock, boolean has_alcohol, double time_to_prepare){
 		this.id = id;
 		this.description = description;
 		this.price = price;
@@ -21,8 +22,14 @@ class Product{
 		this.time_to_prepare = time_to_prepare;
 
 		allProducts.add(this);
+
+		if(id == -1){
+			this.id = ++last_id;
+		}
 	}
-	
+
+	long getId(){ return this.id; }						// TODO: Add to CD
+	double getPrice(){ return this.price; }				// TODO: Add to CD
 	boolean isCurrentlyInOrder(){
 		for(Order order : Order.allOrders){
 			if(order.products.contains(this) && !order.products_paid.contains(this)) return true;
@@ -72,11 +79,11 @@ class Product{
 		}
 	}
 
-	public static Product getProductById(String id){
+	public static Product getProductById(long id){			// TODO: Change parameter type in CD
 		// THIS IS A VERY BAD IMPLEMENTATION but I don't care
 
 		for(Product p : allProducts){
-			if(p.id.equals(id))
+			if(p.id == id)
 				return p;
 		}
 

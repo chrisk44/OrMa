@@ -13,6 +13,7 @@ public class Session{
     // Requests
     static final String REQ_LOGIN = "login",
                         REQ_NEW_ORDER = "new_order",
+                        REQ_EXIT = "exit",
                         REQ_TB_CALL = "tb_call",                /* Sequence 1, 3, 10 */
                         REQ_EDIT_ORDER = "edit_order",          /* Sequence 1 */
                         REQ_SEND_ORDER = "send_order",          /* Sequence 2 */
@@ -97,11 +98,15 @@ public class Session{
 
         try{
             switch(req){
+                case REQ_EXIT:
+                    return true;
+
                 case REQ_LOGIN:{
                     /*
                      * Format:
-                     * type\n  <-- waiter | pr | prepArea | tableButton
-                     * username;password_hash\n
+                     * type;username;password_hash\n
+                     *
+                     * type <-- waiter | pr | prepArea | tableButton
                      *
                      * Respond with waiter id or fail
                      */
@@ -244,7 +249,7 @@ public class Session{
                     int action;
                     for(int i = 0;i<num_of_products;i++){
                         data = readString().split(";");
-                        p = Product.getProductById(data[1]);
+                        p = Product.getProductById(Long.parseLong(data[1]));
                         action = Integer.parseInt(data[0]);
 
                         if(p==null){
@@ -278,6 +283,11 @@ public class Session{
                     if(order==null){
                         new Exception("Tried to send non-existent order").printStackTrace();
                         return true;
+                    }
+
+                    // If order is already assigned, then it was rejected
+                    if(order.getAssignedArea()!=null){
+                        order.getAssignedArea().onOrderReject(order);
                     }
 
                     order.send();
@@ -391,7 +401,7 @@ public class Session{
                     int num_of_products = readInt();
 
                     for(int i = 0;i<num_of_products;i++){
-                        products.add(Product.getProductById(readString()));
+                        products.add(Product.getProductById(readLong()));
                     }
 
                     table.onOrderPaid(products);
@@ -399,7 +409,7 @@ public class Session{
 
                     double total = 0.0;
                     for(Product p : products){
-                        total += p.price;
+                        total += p.getPrice();
                     }
 
                     Waiter w = (Waiter)(this.device.getEmployee());
@@ -525,7 +535,7 @@ public class Session{
                      * ...
                      */
 
-                    String product_id = readString();
+                    long product_id = readLong();
 
                     Product product = Product.getProductById(product_id);
                     if(product==null){
@@ -561,7 +571,7 @@ public class Session{
                     if(client_id != -1){
                         Product offer = Product.getOfferForClient(client_id);
                         if(offer!=null){
-                            respond(offer.id);
+                            respond(Long.toString(offer.getId()));
                             break;
                         }
                     }
@@ -573,7 +583,7 @@ public class Session{
 
                 default:
                     respond("STATUS 499 Disappointed: The server has received your request but thinks you can do better.");
-                    return true;
+                    //return true;
 
             }
         }catch(IOException | NumberFormatException e){

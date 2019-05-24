@@ -13,6 +13,12 @@ public abstract class Device {
          // Send n to the device
          // if (n.needs_response) then get response and return it
 
+         // Dummy Implementation
+         System.out.println("[Notification] Sending notification to device " + n.getDevice().ip_addr.getHostAddress() + "... (waiting 5 seconds to return true");
+         try{
+             Thread.sleep(5000);
+         }catch(InterruptedException ignored){}
+
          // TODO
 
          return true;
