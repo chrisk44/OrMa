@@ -65,6 +65,7 @@ class Order{
 		}
 		assigned_prepArea = prepArea;
 		prepArea.showNewOrder(this);
+		table.setNormal();				// TODO: Add to SD
 	}
 
 	void assignOrder(PrepArea prepArea){

@@ -17,11 +17,11 @@ public class Session{
                         REQ_TB_CALL = "tb_call",                /* Sequence 1, 3, 10 */     // correctly sends notification, and re-sends it after rejection
                         REQ_EDIT_ORDER = "edit_order",          /* Sequence 1 */            // correctly edits the order
                         REQ_SEND_ORDER = "send_order",          /* Sequence 2 */            // correctly sends the order, correctly changes the prepArea when it's after rejection
-                        REQ_AUTO_ASSIGN = "auto_assign",        /* Sequence 2 */
+                        REQ_AUTO_ASSIGN = "auto_assign",        /* Sequence 2 */            // correctly assigns max 3 of the PA's orders to the PA
                         REQ_ASSIGN_ORDERS = "assign_orders",    /* Sequence 2 */
                         REQ_MARK_READY = "mark_ready",          /* Sequence 8 */
                         REQ_PAY_ORDER = "pay_order",            /* Sequence 3 */
-                        REQ_ADD_TO_WL = "add_to_wl",            /* Sequence 4 */
+                        REQ_ADD_TO_WL = "add_to_wl",            /* Sequence 4 */            // correctly adds the wg to the waiting list and sends notifications when a table is found
                         REQ_SET_RESERVED = "set_reserved",      /* Sequence 5 */
                         REQ_EDIT_EMPLOYEE = "edit_employee",    /* Sequence 6 */
                         REQ_EDIT_TOPOLOGY = "edit_topology",    /* Sequence 7 */
@@ -86,6 +86,7 @@ public class Session{
             e.printStackTrace();
         }
     }
+
     String readString() throws IOException{ return sock_out.readLine(); }
     long readLong() throws IOException{ return Long.parseLong(readString()); }
     int readInt() throws IOException{ return Integer.parseInt(readString()); }
@@ -98,8 +99,9 @@ public class Session{
 
         try{
             switch(req){
-                case REQ_EXIT:
+                case REQ_EXIT:{
                     return true;
+                }
 
                 case REQ_LOGIN:{
                     /*
@@ -139,16 +141,15 @@ public class Session{
                         }
 
                         case "prepArea":{
-                            String username = data[1];
+                            long prepAreaId = Long.parseLong(data[1]);
                             String pass_hash = data[2];
                             // Assume we verify this with the database, also get prepArea_id, is_new and id
-                            long id = 5;
-                            long prepArea_id = 10;
+                            long pae_id = 5;
 
-                            PrepAreaEmployee pae = new PrepAreaEmployee(id, false);
-                            device = new PrepAreaDevice(pae, PrepArea.getPrepAreaById(prepArea_id), socket.getInetAddress());
+                            PrepAreaEmployee pae = new PrepAreaEmployee(pae_id, false);
+                            device = new PrepAreaDevice(pae, PrepArea.getPrepAreaById(prepAreaId), socket.getInetAddress());
                             pae.setDevice((PrepAreaDevice)device);
-                            respond(Long.toString(id));
+                            respond(Long.toString(pae_id));
                             break;
                         }
 
@@ -175,11 +176,18 @@ public class Session{
 
                 case REQ_TB_CALL:{
                     /*
+                     * Can only be called by a TableButton or a Waiter (after rejection of call)
+                     *
                      * Format:
                      * table_id\n
                      *
                      * Respond with ok
                      */
+
+                    if(!(this.device instanceof TableButton) && !(this.device.getEmployee() instanceof Waiter)){
+                        new Exception("tb_call can only be called by a TableButton or a Waiter").printStackTrace();
+                        return true;
+                    }
 
                     long id = readLong();
 
@@ -197,11 +205,18 @@ public class Session{
 
                 case REQ_NEW_ORDER:{
                     /*
+                     * Can only be called by a Waiter
+                     *
                      * Format:
                      * table_id\n
                      *
                      * Create a new order and respond with its id, or failed if the table already has an order
                      */
+
+                    if(!(this.device.getEmployee() instanceof Waiter)){
+                        new Exception("new_order can only be called by a Waiter").printStackTrace();
+                        return true;
+                    }
 
                     Table table = Table.getTableById(readLong());
                     if(table==null){
@@ -224,6 +239,8 @@ public class Session{
 
                 case REQ_EDIT_ORDER:{
                     /*
+                     * Can only be called by a Waiter
+                     *
                      * Format:
                      * order_id\n
                      * num_of_products\n
@@ -233,6 +250,11 @@ public class Session{
                      *
                      * Respond with ok or failed
                      */
+
+                    if(!(this.device.getEmployee() instanceof Waiter)){
+                        new Exception("edit_order can only be called by a Waiter").printStackTrace();
+                        return true;
+                    }
 
                     ArrayList<Product> products = new ArrayList<>();
                     ArrayList<Integer> actions = new ArrayList<>();
@@ -272,11 +294,18 @@ public class Session{
 
                 case REQ_SEND_ORDER:{
                     /*
+                     * Can only be called by a Waiter
+                     *
                      * Format:
                      * order_id\n
                      *
                      * Respond with ok
                      */
+
+                    if(!(this.device.getEmployee() instanceof Waiter)){
+                        new Exception("send_order can only be called by a Waiter").printStackTrace();
+                        return true;
+                    }
 
                     long order_id = readLong();
 
@@ -300,6 +329,8 @@ public class Session{
 
                 case REQ_AUTO_ASSIGN:{
                     /*
+                     * Can only be called by a PrepArea
+                     *
                      * Format:
                      * nothing
                      *
@@ -310,8 +341,14 @@ public class Session{
                      * ...
                      */
 
+                    if(!(this.device instanceof PrepAreaDevice)){
+                        new Exception("auto_assign can only be called by a PrepAreaDevice").printStackTrace();
+                        return true;
+                    }
+
                     PrepArea currentPA = ((PrepAreaDevice)(this.device)).getPrepArea();
                     ArrayList<Order> orders = currentPA.findBestCombination();
+                    currentPA.assigned_orders.addAll(orders);
 
                     respond(Integer.toString(orders.size()));
                     for(Order o : orders){
@@ -323,6 +360,8 @@ public class Session{
 
                 case REQ_ASSIGN_ORDERS:{
                     /*
+                     * Can only be called by a PrepArea
+                     *
                      * Format:
                      * num_of_orders\n
                      * order_id\n
@@ -332,24 +371,27 @@ public class Session{
                      * Respond with ok
                      */
 
+                    if(!(this.device instanceof PrepAreaDevice)){
+                        new Exception("assign_orders can only be called by a PrepAreaDevice").printStackTrace();
+                        return true;
+                    }
+
+                    PrepArea currentPA = ((PrepAreaDevice)(this.device)).getPrepArea();
                     int num_of_orders = readInt();
                     for(int i=0; i<num_of_orders; i++){
                         Order o = Order.getOrderById(readLong());
 
-                        if(o!=null){
-
-                            PrepArea best = PrepArea.findBestForOrder(o);
-                            if(best==null){
-                                new Exception("Called assign_orders without any PrepAreas in the system").printStackTrace();
-                                return true;
-                            }
-
-                            o.assignOrder(best);
-
-                        }else{
+                        if(o==null){
                             new Exception("Tried to assign non-existent order").printStackTrace();
                             return true;
                         }
+
+                        if(o.getAssignedArea()==null){
+                            new Exception("Tried to assign non-sent order").printStackTrace();
+                            return true;
+                        }
+
+                        o.assignOrder(currentPA);
                     }
 
                     respond(RES_OK);
@@ -359,11 +401,18 @@ public class Session{
 
                 case REQ_MARK_READY:{
                     /*
+                     * Can only be called by a PrepArea
+                     *
                      * Format:
                      * nothing, mark ready any order assigned this prepArea
                      *
                      * Respond with ok
                      */
+
+                    if(!(this.device instanceof PrepAreaDevice)){
+                        new Exception("mark_ready can only be called by a PrepAreaDevice").printStackTrace();
+                        return true;
+                    }
 
                     PrepArea currentPA = ((PrepAreaDevice)(this.device)).getPrepArea();
                     for(Order o : currentPA.getAssignedOrders()){
@@ -377,6 +426,8 @@ public class Session{
 
                 case REQ_PAY_ORDER:{
                     /*
+                     * Can only be called by a Waiter
+                     *
                      * Format:
                      * table_id\n
                      * num_of_products\n
@@ -387,6 +438,11 @@ public class Session{
                      *
                      * Respond with ok when done
                      */
+
+                    if(!(this.device.getEmployee() instanceof Waiter)){
+                        new Exception("pay_order can only be called by a Waiter").printStackTrace();
+                        return true;
+                    }
 
                     long table_id = readLong();
 
@@ -439,6 +495,8 @@ public class Session{
 
                 case REQ_ADD_TO_WL:{
                     /*
+                     * Can only be called by a PR
+                     *
                      * Format:
                      * name\n
                      * num_of_people\n
@@ -446,6 +504,11 @@ public class Session{
                      *
                      * Respond with ok
                      */
+
+                    if(!(this.device.getEmployee() instanceof PR)){
+                        new Exception("add_to_wl can only be called by a PR").printStackTrace();
+                        return true;
+                    }
 
                     String name = readString();
                     int num_of_people = readInt();
@@ -557,11 +620,18 @@ public class Session{
 
                 case REQ_GET_OFFER:{
                     /*
+                     * Can only be called by a Waiter
+                     *
                      * Format:
                      * table_id\n
                      *
                      * Respond with product_id or fail
                      */
+
+                    if(!(this.device.getEmployee() instanceof Waiter)){
+                        new Exception("get_offer can only be called by a Waiter").printStackTrace();
+                        return true;
+                    }
 
                     long table_id = readLong();
                     Table table = Table.getTableById(table_id);
@@ -584,9 +654,9 @@ public class Session{
                     break;
                 }
 
-                default:
+                default:{
                     respond("STATUS 499 Disappointed: The server has received your request but thinks you can do better.");
-                    //return true;
+                }
 
             }
         }catch(IOException | NumberFormatException e){

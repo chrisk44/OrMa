@@ -16,6 +16,6 @@ public class LatLng{
     }
 
     static LatLng random(){
-        return new LatLng(Main.r.nextDouble(), Main.r.nextDouble());
+        return new LatLng(Main.r.nextInt(10), Main.r.nextInt(10));
     }
 }

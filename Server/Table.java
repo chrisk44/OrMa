@@ -1,14 +1,13 @@
 import java.util.ArrayList;
 
 public class Table {
-	static long last_id = 0;								// For debugging, no need to add in CD
 	static ArrayList<Table> allTables = new ArrayList<>();
 	private long id;
 	private LatLng lat_lng;
 	private int seats;
 	private int floor;
 	private Order order;
-	public enum Status { FREE, RESERVED, PAID, CALLING, TO_CLEAN, NORMAL, TAKEN }
+	public enum Status { FREE, RESERVED, PAID, CALLING, NORMAL, TAKEN }
 	private Status status = Status.FREE;
 
 	Table(long id, LatLng lat_lng, int seats, int floor){
@@ -18,19 +17,18 @@ public class Table {
 		this.floor = floor;
 
 		allTables.add(this);
-
-		if(id == -1){
-			this.id = ++last_id;
-		}
 	}
 
 	public String toString(){
-		return "(Table: id=" + id + ", Location=" + lat_lng.toString() + ", Seats=" + seats + ", order=" + (order==null ? "null" : order.getId()) + ")";
+		String str = "(Table: id=" + id + ", Location=" + lat_lng.toString() + ", Seats=" + seats + ", order=" + (order==null ? "null" : order.getId()) + ", status=";
+
+		return str + status + ")";
 	}
 	
 	public void onCall(){
 		// Called when the table's TableButton is pressed
-
+		Status prev_status = status;
+		status = Status.CALLING;			// TODO: Maybe add to SD?
 		new Thread(() -> {
 
 			// Find the most suitable Waiter
@@ -46,6 +44,7 @@ public class Table {
 
 				// If the waiter accepted it, we are done, else try again
 				if(w.notify( new TableCallNotification(this, w)) ){
+					status = prev_status;		// TODO: Maybe add to SD?
 					break;
 				}else{
 					rejected.add(w);
@@ -58,20 +57,21 @@ public class Table {
 	}
 	public void onOrderPaid(ArrayList<Product> products){
 		// Called when a Waiter sets some products as paid
-
 		this.order.setPaid(products);
+		if(getBalance() == 0){
+			status = Status.PAID;
+		}
 	}
 	public static Table findFreeTable(WaitingGroup wg){
 		// Find a free table in which this WaitingGroup can fit
 		for(Table t : allTables){
-			if(t.isAvailable() && t.seats<=wg.getNumOfPeople()){
+			if(t.isAvailable() && t.seats>=wg.getNumOfPeople()){
 				return t;
 			}
 		}
 
 		return null;
 	}
-
 
 	public void setOrder(Order order){				// TODO: Add to CD
 		if(getBalance() > 0.0){
@@ -81,16 +81,12 @@ public class Table {
 
 		this.order = order;
 	}
-	public void setTaken(){
-		this.status = Status.TAKEN;
-	}
-	public void setReserved(){
-		this.status = Status.RESERVED;
-	}
+	public void setTaken(){ this.status = Status.TAKEN; }
+	public void setReserved(){ this.status = Status.RESERVED; }
+	public void setNormal(){ this.status = Status.NORMAL; }
 	public boolean isAvailable(){
 		return this.status == Status.FREE;
 	}
-
 
 	public static boolean onTopologyEdit(Bundle new_info){
 		if(validateData(new_info)){
@@ -121,9 +117,7 @@ public class Table {
 	}
 	Order getOrder(){ return this.order; }			// TODO: Add to CD
 	long getId(){ return this.id; }					// TODO: Add to CD
-	double getBalance(){
-		return this.order==null ? 0.0 : order.getBalance();
-	}
+	double getBalance(){ return this.order==null ? 0.0 : order.getBalance(); }
 	LatLng getLocation(){ return this.lat_lng; }	// TODO: Add to CD
 
 	public static Table getTableById(long id){

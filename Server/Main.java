@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.Random;
 
 public class Main{
+    static final int MOBILE_PORT = 3001;
     static final int SERVER_PORT = 3000;
     static ServerSocket serverSocket;
 
@@ -19,15 +20,16 @@ public class Main{
 
         // Load dummy data because our puny human linear perception of time doesn't allow for this kind of implementations
         // TODO: Add dummy data (Tables, PrepAreas, Products) so the server has enough to work with
-        for(int i=0; i<10; i++){
-            new Table(-1, LatLng.random(), 4, 0);
-            new PrepArea(-1, LatLng.random(), null, 0);
-            new Product(-1, "desc", 1.0, Product.ProductType.PRODUCT_DRINK, 10, false, 2.0);
+        for(int i=1; i<=10; i++){
+            new Table(i, LatLng.random(), 4, 0);
+            new PrepArea(i, LatLng.random(), null, 0);
+            new Product(i, "desc", 1.0, Product.ProductType.PRODUCT_DRINK, 10, false, 2.0);
         }
 
         System.out.println("OK");
 
-        System.out.print("[INIT] Starting thread for manual input handling...");
+        // Start thread for CLI
+        System.out.print("[INIT] Starting thread for CLI...");
         new Thread(() -> {
             BufferedReader sys_in = new BufferedReader(new InputStreamReader(System.in));
 
@@ -78,56 +80,44 @@ public class Main{
 
         try{
             switch(req){
-                case "add":{
-                    System.out.println("1. Table");
-                    System.out.println("2. PrepArea");
-                    System.out.println("3. Product");
-                    System.out.println("Whatever else to return");
-
-                    int choice;
-                    while(true){
-                        choice = Integer.parseInt(sys_in.readLine());
-
-                        if(choice==1){
-                            // Create a new Table
-                            System.out.println(new Table(-1, LatLng.random(), 4, 0));
-                        }else if(choice==2){
-                            // Create a new PrepArea
-                            System.out.println(new PrepArea(-1, LatLng.random(), null, 0));
-                        }else if(choice==3){
-                            // Create a new Product
-                            System.out.println(new Product(-1, "desc", 1.0, Product.ProductType.PRODUCT_DRINK, 10, false, 2.0));
-                        }else break;
-                    }
-                    break;
-                }
-
                 case "print":{
                     System.out.println("1. Tables");
                     System.out.println("2. PrepAreas");
                     System.out.println("3. Orders");
+                    System.out.println("4. Waiting List");
 
                     int choice = Integer.parseInt(sys_in.readLine());
-                    if(choice==1){
-                        for(Table t : Table.allTables)
-                            System.out.println(t.toString());
+                    switch(choice){
+                        case 1:
+                            for(Table t : Table.allTables)
+                                System.out.println(t.toString());
 
-                    }else if(choice==2){
-                        for(PrepArea pa : PrepArea.allPrepAreas)
-                            System.out.println(pa.toString());
+                            break;
 
-                    }else if(choice==3){
-                        for(Order o : Order.allOrders)
-                            System.out.println(o.toString());
+                        case 2:
+                            for(PrepArea pa : PrepArea.allPrepAreas)
+                                System.out.println(pa.toString());
+
+                            break;
+
+                        case 3:
+                            for(Order o : Order.allOrders)
+                                System.out.println(o.toString());
+
+                            break;
+
+                        case 4:
+                            for(WaitingGroup wg : WaitingGroup.waitingList)
+                                System.out.println(wg.toString());
                     }
                     break;
                 }
 
                 case "auto":{
-
                     // Automatically create some random orders and send them to prepAreas, by connecting to the actual server
                     // Connect to serverSocket
                     Socket cl = new Socket(serverSocket.getInetAddress(), serverSocket.getLocalPort());
+                    BufferedReader cl_out = new BufferedReader(new InputStreamReader(cl.getInputStream()));
                     PrintWriter cl_in = new PrintWriter(cl.getOutputStream());
 
                     // Log in as a waiter
@@ -137,16 +127,18 @@ public class Main{
                     int num_of_orders = 10;
 
                     // Create and edit num_of_orders orders
-                    for(int i = 1;i<=num_of_orders;i++){
+                    for(int i=0; i<=num_of_orders; i++){
                         int num_of_products = 1+r.nextInt(Product.allProducts.size()-1);
 
                         // Create the new order and start editing it
-                        cl_in.print(
-                                "new_order\n"+
-                                        i+"\n"+
-                                        "edit_order\n"+
-                                        i+"\n"+
-                                        num_of_products+"\n");
+                        cl_in.print("new_order\n" +
+                                1 + (i%Table.allTables.size()) + "\n");
+
+                        int new_id = Integer.parseInt(cl_out.readLine());
+
+                        cl_in.print("edit_order\n"+
+                                new_id+"\n"+
+                                num_of_products+"\n");
 
                         // Add num_of_products products, chosen randomly from allProducts
                         for(int j = 0;j<num_of_products;j++){
@@ -154,16 +146,19 @@ public class Main{
                         }
 
                         // Send the order
-                        cl_in.print("send_order\n"+i+"\n");
+                        cl_in.print("send_order\n"+
+                                new_id+"\n");
 
                         // Maybe send it again
-                        if(r.nextBoolean()){
-                            cl_in.print("send_order\n"+i+"\n");
+                        while(r.nextBoolean()){
+                            cl_in.print("send_order\n"+
+                                    new_id+"\n");
                         }
 
                         cl_in.flush();
                     }
 
+                    // Close the connection
                     cl_in.println("exit");
                     cl_in.flush();
 
@@ -173,14 +168,14 @@ public class Main{
                 }
 
                 case "test":{
-                    System.out.println("1. Test case 1");
-                    System.out.println("2. Test case 2");
-                    System.out.println("0. Return");
-
                     // Connect to serverSocket
                     Socket cl = new Socket(serverSocket.getInetAddress(), serverSocket.getLocalPort());
                     BufferedReader cl_out = new BufferedReader(new InputStreamReader(cl.getInputStream()));
                     PrintWriter cl_in = new PrintWriter(cl.getOutputStream());
+
+                    System.out.println("1. Test case 1");
+                    System.out.println("2. Test case 2");
+                    System.out.println("0. Return");
 
                     int choice = Integer.parseInt(sys_in.readLine());
                     while(choice != 0){
@@ -201,6 +196,9 @@ public class Main{
 
                         choice = Integer.parseInt(sys_in.readLine());
                     }
+
+                    cl_in.println("exit");
+                    cl.close();
 
                     break;
                 }
@@ -253,7 +251,6 @@ public class Main{
             e.printStackTrace();
         }
     }
-
     static void exitServer(){
         try{
             serverSocket.close();

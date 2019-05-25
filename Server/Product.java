@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 
 class Product{
-	static long last_id = 0;
 	static ArrayList<Product> allProducts = new ArrayList<>();
 	enum ProductType{ PRODUCT_DRINK, PRODUCT_FOOD, PRODUCT_OTHER }
 	private double price;
@@ -22,10 +21,6 @@ class Product{
 		this.time_to_prepare = time_to_prepare;
 
 		allProducts.add(this);
-
-		if(id == -1){
-			this.id = ++last_id;
-		}
 	}
 
 	long getId(){ return this.id; }						// TODO: Add to CD

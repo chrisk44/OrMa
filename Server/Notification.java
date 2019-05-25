@@ -35,6 +35,7 @@ abstract class Notification{
 	void accept(){}
 	void reject(){}
 	abstract Device getDevice();
+	abstract String toDeviceString();		// TODO: Add to CD
 }
 
 class OrderProblemNotification extends Notification{
@@ -54,6 +55,9 @@ class OrderProblemNotification extends Notification{
 	}
 	
 	Device getDevice(){ return receiver.getDevice(); }
+	String toDeviceString(){
+		return "";
+	}
 }
 
 class OrderReadyNotification extends Notification{
@@ -70,6 +74,9 @@ class OrderReadyNotification extends Notification{
 	}
 	
 	Device getDevice(){ return receiver.getDevice(); }
+	String toDeviceString(){
+		return "";
+	}
 }
 
 class TableCallNotification extends Notification{
@@ -84,6 +91,9 @@ class TableCallNotification extends Notification{
 	}
 	
 	Device getDevice(){ return receiver.getDevice(); }
+	String toDeviceString(){
+		return "";
+	}
 }
 
 class TableFreeNotification extends Notification{
@@ -108,6 +118,9 @@ class TableFreeNotification extends Notification{
 	}
 	
 	Device getDevice(){ return receiver.getDevice(); }
+	String toDeviceString(){
+		return "";
+	}
 }
 
 class PrepAreaNotification extends Notification{
@@ -126,6 +139,9 @@ class PrepAreaNotification extends Notification{
 	}
 	
 	Device getDevice(){ return prepArea.employee.getDevice(); }
+	String toDeviceString(){
+		return "";
+	}
 }
 
 class TopologyChangeNotification extends Notification{
@@ -139,6 +155,9 @@ class TopologyChangeNotification extends Notification{
 	}
 	
 	Device getDevice(){ return employee.getDevice(); }
+	String toDeviceString(){
+		return "";
+	}
 }
 
 class ProductPriceNotification extends Notification{
@@ -154,6 +173,9 @@ class ProductPriceNotification extends Notification{
 	}
 	
 	Device getDevice(){ return receiver.getDevice(); }
+	String toDeviceString(){
+		return "";
+	}
 }
 
 

@@ -14,6 +14,10 @@ public class WaitingGroup {
 
 	}
 
+	public String toString(){
+		return "(WaitingGroup: " + name + ", people=" + number_of_people + ", priority=" + priority + ")";
+	}
+
 	public int getNumOfPeople(){ return number_of_people; }			// TODO: Add to CD
 	public void remove(){
 		waitingList.remove(this);

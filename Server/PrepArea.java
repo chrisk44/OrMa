@@ -3,8 +3,7 @@ import java.util.HashMap;
 import java.util.List;
 
 class PrepArea{
-    static long last_id = 0;								// For debugging, no need to add in CD
-	static ArrayList<PrepArea> allPrepAreas = new ArrayList<>();            // TODO: Change visibility in DD
+	static ArrayList<PrepArea> allPrepAreas = new ArrayList<>();            // TODO: Change visibility in CD
 	protected long id;
 	protected LatLng lat_lng;
 	protected HashMap<Product, Integer> product_stock;
@@ -21,10 +20,6 @@ class PrepArea{
 		this.floor = floor;
 
 		allPrepAreas.add(this);
-
-        if(id == -1){
-            this.id = ++last_id;
-        }
 	}
 
     public String toString(){
@@ -53,7 +48,11 @@ class PrepArea{
 
 		ArrayList<Order> result = new ArrayList<>();
 
-		System.out.println("[ :( ] Not yet implemented, returning the first 2 orders of the PrepArea");
+		// If it already has assigned orders, return none (UI won't allow this)
+		if(!this.assigned_orders.isEmpty()){
+			return result;
+		}
+
 		for(int i = 0;i<Math.min(orders.size(), 3);i++){
 			result.add(orders.get(i));
 		}
@@ -80,7 +79,7 @@ class PrepArea{
 	
 	void showNewOrder(Order o){
 		orders.add(o);
-		System.out.println("Sending order " + o.getId() + " to " + this.toString());
+		System.out.println("[D] Sent order " + o.getId() + " to " + this.toString());
 		
 		// Send the new order to (PrepAreaDevice) (employee.getDevice())
 	}
