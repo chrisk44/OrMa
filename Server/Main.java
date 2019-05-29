@@ -123,16 +123,18 @@ public class Main{
                     // Log in as a waiter
                     cl_in.print("login\n"+
                             "waiter;l;l\n");
+                    cl_in.flush();
+                    cl_out.readLine();      // Read the login id
 
                     int num_of_orders = 10;
 
                     // Create and edit num_of_orders orders
-                    for(int i=0; i<=num_of_orders; i++){
+                    for(int i=0; i<num_of_orders; i++){
                         int num_of_products = 1+r.nextInt(Product.allProducts.size()-1);
 
                         // Create the new order and start editing it
-                        cl_in.print("new_order\n" +
-                                1 + (i%Table.allTables.size()) + "\n");
+                        cl_in.print("new_order\n" + (1 + (i%Table.allTables.size())) + "\n");
+                        cl_in.flush();
 
                         int new_id = Integer.parseInt(cl_out.readLine());
 
@@ -144,18 +146,22 @@ public class Main{
                         for(int j = 0;j<num_of_products;j++){
                             cl_in.print("1;"+Product.allProducts.get(r.nextInt(Product.allProducts.size())).getId()+"\n");
                         }
+                        cl_in.flush();
+                        cl_out.readLine();      // Read the ok
 
                         // Send the order
                         cl_in.print("send_order\n"+
                                 new_id+"\n");
+                        cl_in.flush();
+                        cl_out.readLine();      // Read the ok
 
                         // Maybe send it again
                         while(r.nextBoolean()){
                             cl_in.print("send_order\n"+
                                     new_id+"\n");
+                            cl_in.flush();
+                            cl_out.readLine();      // Read the ok
                         }
-
-                        cl_in.flush();
                     }
 
                     // Close the connection

@@ -1,9 +1,12 @@
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class Session{
     // Responses
@@ -18,15 +21,15 @@ public class Session{
                         REQ_EDIT_ORDER = "edit_order",          /* Sequence 1 */            // correctly edits the order
                         REQ_SEND_ORDER = "send_order",          /* Sequence 2 */            // correctly sends the order, correctly changes the prepArea when it's after rejection
                         REQ_AUTO_ASSIGN = "auto_assign",        /* Sequence 2 */            // correctly assigns max 3 of the PA's orders to the PA
-                        REQ_ASSIGN_ORDERS = "assign_orders",    /* Sequence 2 */
-                        REQ_MARK_READY = "mark_ready",          /* Sequence 8 */
+                        REQ_ASSIGN_ORDERS = "assign_orders",    /* Sequence 2 */            // correctly assigns the orders to the PA
+                        REQ_MARK_READY = "mark_ready",          /* Sequence 8 */            // correctly sets the orders as ready and sends notifications
                         REQ_PAY_ORDER = "pay_order",            /* Sequence 3 */
                         REQ_ADD_TO_WL = "add_to_wl",            /* Sequence 4 */            // correctly adds the wg to the waiting list and sends notifications when a table is found
-                        REQ_SET_RESERVED = "set_reserved",      /* Sequence 5 */
+                        REQ_SET_RESERVED = "set_reserved",      /* Sequence 5 */            // correctly sets a table as reserved or responds with fail
                         REQ_EDIT_EMPLOYEE = "edit_employee",    /* Sequence 6 */
                         REQ_EDIT_TOPOLOGY = "edit_topology",    /* Sequence 7 */
                         REQ_EDIT_PRODUCT = "edit_product",      /* Sequence 9 */
-                        REQ_GET_OFFER = "get_offer";            /* Sequence 10 */
+                        REQ_GET_OFFER = "get_offer";            /* Sequence 10 */           // correctly returns a product_id (dummy implementation)
 
     private Socket socket;
     private PrintWriter sock_in;
@@ -99,6 +102,10 @@ public class Session{
 
         try{
             switch(req){
+                case "":{
+                    break;
+                }
+
                 case REQ_EXIT:{
                     return true;
                 }
@@ -348,7 +355,6 @@ public class Session{
 
                     PrepArea currentPA = ((PrepAreaDevice)(this.device)).getPrepArea();
                     ArrayList<Order> orders = currentPA.findBestCombination();
-                    currentPA.assigned_orders.addAll(orders);
 
                     respond(Integer.toString(orders.size()));
                     for(Order o : orders){
@@ -414,12 +420,16 @@ public class Session{
                         return true;
                     }
 
-                    PrepArea currentPA = ((PrepAreaDevice)(this.device)).getPrepArea();
-                    for(Order o : currentPA.getAssignedOrders()){
-                        o.setReady();
-                    }
+                    new Thread(() -> {
+                        PrepArea currentPA = ((PrepAreaDevice)(this.device)).getPrepArea();
+                        for(Order o : currentPA.getAssignedOrders()){
+                            o.setReady();
+                        }
 
-                    currentPA.clearAssignedOrders();
+                        currentPA.clearAssignedOrders();
+                    }).start();
+
+                    respond(RES_OK);
 
                     break;
                 }
@@ -430,8 +440,8 @@ public class Session{
                      *
                      * Format:
                      * table_id\n
-                     * num_of_products\n
                      * payment_type\n    <-- 0:cash, -1:pos, 1+:billing_account_id
+                     * num_of_products\n
                      * product_id\n
                      * product_id\n
                      * ...
@@ -654,10 +664,61 @@ public class Session{
                     break;
                 }
 
-                default:{
-                    respond("STATUS 499 Disappointed: The server has received your request but thinks you can do better.");
+                case "print":{
+                    respond("1. Tables");
+                    respond("2. PrepAreas");
+                    respond("3. Orders");
+                    respond("4. Waiting List");
+
+                    int choice = Integer.parseInt(readString());
+                    switch(choice){
+                        case 1:
+                            for(Table t : Table.allTables)
+                                respond(t.toString());
+
+                            break;
+
+                        case 2:
+                            for(PrepArea pa : PrepArea.allPrepAreas)
+                                respond(pa.toString());
+
+                            break;
+
+                        case 3:
+                            for(Order o : Order.allOrders)
+                                respond(o.toString());
+
+                            break;
+
+                        case 4:
+                            for(WaitingGroup wg : WaitingGroup.waitingList)
+                                respond(wg.toString());
+                    }
+                    break;
                 }
 
+                default:{
+                    String encodedString = "U1RBVFVTIDQ5OSBEaXNhcHBvaW50ZWQ6IFR" +
+                            "oZSBzZXJ2ZXIgaGFzIHJlY2VpdmVkIHlvdXIgcmVxdWVzdCBid" +
+                            "XQgdGhpbmtzIHlvdSBjYW4gZG8gYmV0dGVyLgpUaGlzIGlzIGp" +
+                            "1c3QgbGF6eSB3cml0aW5nClRoYXQncyBub3QgaG93IGl0IHdvc" +
+                            "mtzLiBUaGF0J3Mgbm90IGhvdyBhbnkgb2YgaXQgd29ya3MKV2h" +
+                            "hdD8KVHJ5IGFnYWluCklzIHRoaXMgdGhlIGJlc3QgeW91IGNhb" +
+                            "iBkbz8KWW91ciBwYXJlbnRzIG11c3QgYmUgcHJvdWQKWW91IGF" +
+                            "yZSBhIGRpc2FwcG9pbnRtZW50ClNvIG1hbnkgZWxlY3Ryb25zI" +
+                            "GdvdCBpbmNvbnZlbmllbmNlZCBmb3IgdGhpcwpIdWg/PwpZb3U" +
+                            "ncmUgYSBqb2tlCllvdSdyZSBub3QgdmVyeSBnb29kIGF0IHRoa" +
+                            "XMKVGhhdCdzIGl0PyBUaGF0J3MgeW91ciBicmFpbiB3b3JraW5" +
+                            "nIGF0IGZ1bGwgY2FwYWNpdHk/CnNyc2x5ClRoaXMgaXMgd2hhd" +
+                            "CBoYXBwZW5zIHdoZW4geW91IGRvbid0IHJlYWQgdGhlIGRvY3V" +
+                            "tZW50YXRpb24KV2h5IGFyZSB5b3UgZXZlbiB1c2luZyB5b3VyI" +
+                            "GtleWJvLSB0aGlzIHNob3VsZCBiZSBkb25lIGJ5IHNvZnR3YXJ" +
+                            "lLCB5b3UgYXJlIG5vdCBzbWFydCBlbm91Z2ggZm9yIHRoaXMKQ" +
+                            "XJlIHlvdSBldmVuIHRyeWluZz8=";
+
+                    String[] insults = new String(Base64.getDecoder().decode(encodedString)).split("\n");
+                    respond(insults[Main.r.nextInt(insults.length)]);
+                }
             }
         }catch(IOException | NumberFormatException e){
             e.printStackTrace();

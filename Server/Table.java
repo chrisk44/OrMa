@@ -112,8 +112,11 @@ public class Table {
 	}
 
 	long getClient(){
-		// TODO ?
-		return -1;
+		// Return the id of a client that is currently on this
+		// If none, return -1
+
+		// Dummy
+		return 5;
 	}
 	Order getOrder(){ return this.order; }			// TODO: Add to CD
 	long getId(){ return this.id; }					// TODO: Add to CD

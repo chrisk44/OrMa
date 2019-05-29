@@ -20,9 +20,9 @@ public abstract class Device {
 
         // Dummy Implementation
         boolean resp = Main.r.nextBoolean();
-        System.out.println("[D] Sending notification to device " + n.getDevice().ip_addr.getHostAddress() + "... (waiting 5 seconds to return " + resp + ")");
+        System.out.println("[D] Sending notification to device " + n.getDevice().ip_addr.getHostAddress() + "... (waiting 10 seconds to return " + resp + ")");
         try{
-            Thread.sleep(5000);
+            Thread.sleep(10000);
         }catch(InterruptedException ignored){}
 
         return resp;

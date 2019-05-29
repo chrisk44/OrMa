@@ -85,7 +85,7 @@ class Product{
 		return null;
 	}
 	public static Product getOfferForClient(long client_id){
-		// TODO ?
-		return null;
+		// Dummy (random product, normally would be a special discounted product)
+		return allProducts.get(Main.r.nextInt(allProducts.size()));
 	}
 }
