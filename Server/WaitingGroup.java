@@ -18,7 +18,7 @@ public class WaitingGroup {
 		return "(WaitingGroup: " + name + ", people=" + number_of_people + ", priority=" + priority + ")";
 	}
 
-	public int getNumOfPeople(){ return number_of_people; }			// TODO: Add to CD
+	public int getNumOfPeople(){ return number_of_people; }
 	public void remove(){
 		waitingList.remove(this);
 	}

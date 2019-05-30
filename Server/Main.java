@@ -173,42 +173,6 @@ public class Main{
                     break;
                 }
 
-                case "test":{
-                    // Connect to serverSocket
-                    Socket cl = new Socket(serverSocket.getInetAddress(), serverSocket.getLocalPort());
-                    BufferedReader cl_out = new BufferedReader(new InputStreamReader(cl.getInputStream()));
-                    PrintWriter cl_in = new PrintWriter(cl.getOutputStream());
-
-                    System.out.println("1. Test case 1");
-                    System.out.println("2. Test case 2");
-                    System.out.println("0. Return");
-
-                    int choice = Integer.parseInt(sys_in.readLine());
-                    while(choice != 0){
-                        switch(choice){
-                            case 1:
-                                // Give the test_case_1 inputs to the server with cl_in.print()
-
-                                break;
-
-                            case 2:
-                                // Give the test_case_2 inputs to the server with cl_in.print()
-
-                                break;
-
-                            default:
-                                System.out.println("Invalid option");
-                        }
-
-                        choice = Integer.parseInt(sys_in.readLine());
-                    }
-
-                    cl_in.println("exit");
-                    cl.close();
-
-                    break;
-                }
-
                 case "connect":{
                     // Connect to server as a client (for testing)
                     // Connect to serverSocket

@@ -19,8 +19,8 @@ public class BillingAccount {
 
         // Save to database
     }
-    String getName(){ return this.name; }               // TODO: Add to CD
-    double getBalance(){ return this.balance; }         // TODO: Add to CD
+    String getName(){ return this.name; }
+    double getBalance(){ return this.balance; }
 
     static BillingAccount getAccountById(long id){
         // THIS IS A BAD IMPLEMENTATION but I don't care

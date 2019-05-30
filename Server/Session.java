@@ -14,22 +14,22 @@ public class Session{
                         RES_FAIL = "fail";
 
     // Requests
-    static final String REQ_LOGIN = "login",                                                // correctly returns 5 (dummy id)
-                        REQ_NEW_ORDER = "new_order",                                        // correctly creates the order
-                        REQ_EXIT = "exit",                                                  // correctly closes the connection
-                        REQ_TB_CALL = "tb_call",                /* Sequence 1, 3, 10 */     // correctly sends notification, and re-sends it after rejection
-                        REQ_EDIT_ORDER = "edit_order",          /* Sequence 1 */            // correctly edits the order
-                        REQ_SEND_ORDER = "send_order",          /* Sequence 2 */            // correctly sends the order, correctly changes the prepArea when it's after rejection
-                        REQ_AUTO_ASSIGN = "auto_assign",        /* Sequence 2 */            // correctly assigns max 3 of the PA's orders to the PA
-                        REQ_ASSIGN_ORDERS = "assign_orders",    /* Sequence 2 */            // correctly assigns the orders to the PA
-                        REQ_MARK_READY = "mark_ready",          /* Sequence 8 */            // correctly sets the orders as ready and sends notifications
+    static final String REQ_LOGIN = "login",
+                        REQ_NEW_ORDER = "new_order",
+                        REQ_EXIT = "exit",
+                        REQ_TB_CALL = "tb_call",                /* Sequence 1, 3, 10 */
+                        REQ_EDIT_ORDER = "edit_order",          /* Sequence 1 */
+                        REQ_SEND_ORDER = "send_order",          /* Sequence 2 */
+                        REQ_AUTO_ASSIGN = "auto_assign",        /* Sequence 2 */
+                        REQ_ASSIGN_ORDERS = "assign_orders",    /* Sequence 2 */
+                        REQ_MARK_READY = "mark_ready",          /* Sequence 8 */
                         REQ_PAY_ORDER = "pay_order",            /* Sequence 3 */
-                        REQ_ADD_TO_WL = "add_to_wl",            /* Sequence 4 */            // correctly adds the wg to the waiting list and sends notifications when a table is found
-                        REQ_SET_RESERVED = "set_reserved",      /* Sequence 5 */            // correctly sets a table as reserved or responds with fail
+                        REQ_ADD_TO_WL = "add_to_wl",            /* Sequence 4 */
+                        REQ_SET_RESERVED = "set_reserved",      /* Sequence 5 */
                         REQ_EDIT_EMPLOYEE = "edit_employee",    /* Sequence 6 */
                         REQ_EDIT_TOPOLOGY = "edit_topology",    /* Sequence 7 */
                         REQ_EDIT_PRODUCT = "edit_product",      /* Sequence 9 */
-                        REQ_GET_OFFER = "get_offer";            /* Sequence 10 */           // correctly returns a product_id (dummy implementation)
+                        REQ_GET_OFFER = "get_offer";            /* Sequence 10 */
 
     private Socket socket;
     private PrintWriter sock_in;

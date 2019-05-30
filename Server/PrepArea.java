@@ -3,14 +3,14 @@ import java.util.HashMap;
 import java.util.List;
 
 class PrepArea{
-	static ArrayList<PrepArea> allPrepAreas = new ArrayList<>();            // TODO: Change visibility in CD
+	static ArrayList<PrepArea> allPrepAreas = new ArrayList<>();
 	protected long id;
 	protected LatLng lat_lng;
 	protected HashMap<Product, Integer> product_stock;
 	protected int floor;
 	protected ArrayList<Order> orders = new ArrayList<>();
 	protected ArrayList<Order> assigned_orders = new ArrayList<>();
-	protected ArrayList<Order> rejected_orders = new ArrayList<>();         // TODO: Add to CD
+	protected ArrayList<Order> rejected_orders = new ArrayList<>();
 	protected PrepAreaEmployee employee;
 
 	PrepArea(long id, LatLng lat_lng, HashMap<Product, Integer> stock, int floor){
@@ -40,7 +40,7 @@ class PrepArea{
 	    return str + "])";
     }
 
-	ArrayList<Order> findBestCombination(){		// TODO: Add to CD
+	ArrayList<Order> findBestCombination(){
 		/*
 		 * This will involve some kind of dark magic that I'm currently too busy to come up with
 		 * Just returns the first 2 orders that have been sent to this prepArea
@@ -60,9 +60,9 @@ class PrepArea{
 		return result;
 	}
 
-    long getId(){ return this.id; }						                    // TODO: Add to CD
-	ArrayList<Order> getOrders(){ return this.orders; }						// TODO: Add to CD
-	ArrayList<Order> getAssignedOrders(){ return this.assigned_orders; }    // TODO: Add to CD
+    long getId(){ return this.id; }
+	ArrayList<Order> getOrders(){ return this.orders; }
+	ArrayList<Order> getAssignedOrders(){ return this.assigned_orders; }
     PrepAreaEmployee getEmployee(){
         return employee;
     }
@@ -71,7 +71,7 @@ class PrepArea{
 		orders.removeAll(assigned_orders);
 		assigned_orders.clear();
 	}
-	void onOrderReject(Order o){                                            // TODO: Add to CD
+	void onOrderReject(Order o){
 	    rejected_orders.add(o);
 	    orders.remove(o);
 	    assigned_orders.remove(o);

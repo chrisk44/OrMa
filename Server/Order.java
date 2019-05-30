@@ -65,7 +65,7 @@ class Order{
 		}
 		assigned_prepArea = prepArea;
 		prepArea.showNewOrder(this);
-		table.setNormal();				// TODO: Add to SD
+		table.setNormal();
 	}
 
 	void assignOrder(PrepArea prepArea){
@@ -113,8 +113,8 @@ class Order{
 	boolean isAssigned(){
 		return this.assigned_prepArea != null;
 	}
-	long getId(){ return this.id; }						// TODO: Add to CD
-	Table getTable(){ return this.table; }				// TODO: Add to CD
+	long getId(){ return this.id; }
+	Table getTable(){ return this.table; }
 	double getBalance(){
 		double balance = 0.0;
 
@@ -138,5 +138,4 @@ class Order{
 
 		return null;
 	}
-//	static List<Order> findBestCombination(List<Order> orders)		TODO: Remove from CD
 }

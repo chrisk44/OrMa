@@ -35,7 +35,7 @@ abstract class Notification{
 	void accept(){}
 	void reject(){}
 	abstract Device getDevice();
-	abstract String toDeviceString();		// TODO: Add to CD
+	abstract String toDeviceString();
 }
 
 class OrderProblemNotification extends Notification{

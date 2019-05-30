@@ -28,7 +28,7 @@ public class Table {
 	public void onCall(){
 		// Called when the table's TableButton is pressed
 		Status prev_status = status;
-		status = Status.CALLING;			// TODO: Maybe add to SD?
+		status = Status.CALLING;
 		new Thread(() -> {
 
 			// Find the most suitable Waiter
@@ -44,7 +44,7 @@ public class Table {
 
 				// If the waiter accepted it, we are done, else try again
 				if(w.notify( new TableCallNotification(this, w)) ){
-					status = prev_status;		// TODO: Maybe add to SD?
+					status = prev_status;
 					break;
 				}else{
 					rejected.add(w);
@@ -73,7 +73,7 @@ public class Table {
 		return null;
 	}
 
-	public void setOrder(Order order){				// TODO: Add to CD
+	public void setOrder(Order order){
 		if(getBalance() > 0.0){
 			System.out.println("[E:Table] There is a pending order, can't set a new one");
 			return;
@@ -118,10 +118,10 @@ public class Table {
 		// Dummy
 		return 5;
 	}
-	Order getOrder(){ return this.order; }			// TODO: Add to CD
-	long getId(){ return this.id; }					// TODO: Add to CD
+	Order getOrder(){ return this.order; }
+	long getId(){ return this.id; }
 	double getBalance(){ return this.order==null ? 0.0 : order.getBalance(); }
-	LatLng getLocation(){ return this.lat_lng; }	// TODO: Add to CD
+	LatLng getLocation(){ return this.lat_lng; }
 
 	public static Table getTableById(long id){
 		// THIS IS A VERY BAD IMPLEMENTATION but I don't care

@@ -12,7 +12,7 @@ public class Waiter extends Employee {
 		allWaiters.add(this);
 	}
 
-	public static Waiter findBestForTable(Table t, ArrayList<Waiter> rejected){     // TODO: change parameter in CD
+	public static Waiter findBestForTable(Table t, ArrayList<Waiter> rejected){
 	    // Try not to return anyone included in rejected list
 
         /*

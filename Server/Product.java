@@ -4,7 +4,7 @@ class Product{
 	static ArrayList<Product> allProducts = new ArrayList<>();
 	enum ProductType{ PRODUCT_DRINK, PRODUCT_FOOD, PRODUCT_OTHER }
 	private double price;
-	private long id;				// TODO: Change type in CD
+	private long id;
 	private String description;
 	private ProductType type;
 	private int stock;
@@ -23,8 +23,8 @@ class Product{
 		allProducts.add(this);
 	}
 
-	long getId(){ return this.id; }						// TODO: Add to CD
-	double getPrice(){ return this.price; }				// TODO: Add to CD
+	long getId(){ return this.id; }
+	double getPrice(){ return this.price; }
 	boolean isCurrentlyInOrder(){
 		for(Order order : Order.allOrders){
 			if(order.products.contains(this) && !order.products_paid.contains(this)) return true;
@@ -74,7 +74,7 @@ class Product{
 		}
 	}
 
-	public static Product getProductById(long id){			// TODO: Change parameter type in CD
+	public static Product getProductById(long id){
 		// THIS IS A VERY BAD IMPLEMENTATION but I don't care
 
 		for(Product p : allProducts){
