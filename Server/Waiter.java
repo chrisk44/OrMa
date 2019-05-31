@@ -11,6 +11,9 @@ public class Waiter extends Employee {
 
 		allWaiters.add(this);
 	}
+	public String toString(){
+	    return "(Waiter: cash=" + cash + ", pos=" + pos_charges + ", ba=" + billing_account_charges + ")";
+    }
 
 	public static Waiter findBestForTable(Table t, ArrayList<Waiter> rejected){
 	    // Try not to return anyone included in rejected list

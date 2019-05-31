@@ -1,5 +1,3 @@
-import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -669,6 +667,7 @@ public class Session{
                     respond("2. PrepAreas");
                     respond("3. Orders");
                     respond("4. Waiting List");
+                    respond("5. Waiters");
 
                     int choice = Integer.parseInt(readString());
                     switch(choice){
@@ -693,6 +692,14 @@ public class Session{
                         case 4:
                             for(WaitingGroup wg : WaitingGroup.waitingList)
                                 respond(wg.toString());
+
+                            break;
+
+                        case 5:
+                            for(Waiter w : Waiter.allWaiters)
+                                respond(w.toString());
+
+                            break;
                     }
                     break;
                 }

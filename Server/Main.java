@@ -85,6 +85,7 @@ public class Main{
                     System.out.println("2. PrepAreas");
                     System.out.println("3. Orders");
                     System.out.println("4. Waiting List");
+                    System.out.println("5. Waiters");
 
                     int choice = Integer.parseInt(sys_in.readLine());
                     switch(choice){
@@ -109,6 +110,14 @@ public class Main{
                         case 4:
                             for(WaitingGroup wg : WaitingGroup.waitingList)
                                 System.out.println(wg.toString());
+
+                            break;
+
+                        case 5:
+                            for(Waiter w : Waiter.allWaiters)
+                                System.out.println(w.toString());
+
+                            break;
                     }
                     break;
                 }
